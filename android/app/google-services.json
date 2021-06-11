@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "597610292401",
+    "project_id": "fodome-app",
+    "storage_bucket": "fodome-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597610292401:android:7aaa9fa043caf1b35c6e90",
+        "android_client_info": {
+          "package_name": "com.jsuryakt.fodome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597610292401-co6nck7v2b4e470nehvvuvasm4s114ep.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "b8c6541c61980b164b66d25255137848795232dc"
+          }
+        },
+        {
+          "client_id": "597610292401-egi3pjtn7t1b3pe1nvi76skrjsiqttba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCODMNxWWW-YLPGafGsL9Upbnk6iR6VTo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597610292401-egi3pjtn7t1b3pe1nvi76skrjsiqttba.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
