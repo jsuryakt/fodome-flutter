@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:fodome/widgets/header.dart';
 
-class Upload extends StatefulWidget {
+class Donation extends StatefulWidget {
   @override
-  _UploadState createState() => _UploadState();
+  _DonationState createState() => _DonationState();
 }
 
-class _UploadState extends State<Upload> {
+class _DonationState extends State<Donation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: header(
         context,
-        titleText: "Upload Post",
+        titleText: "Donate",
         fontSize: 30.0,
       ),
       body: Text(
-        "Upload",
+        "Donate",
         style: TextStyle(fontSize: 30.0),
       ),
     );
+  }
+}
+
+class UserResult extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text("User Result");
   }
 }
