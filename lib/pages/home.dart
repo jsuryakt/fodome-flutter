@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fodome/pages/activity_feed.dart';
+// import 'package:fodome/pages/activity_feed.dart';
 import 'package:fodome/pages/donation.dart';
 import 'package:fodome/pages/timeline.dart';
 import 'package:fodome/pages/upload.dart';
+import 'package:fodome/pages/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import 'profile.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 
