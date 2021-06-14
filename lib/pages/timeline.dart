@@ -8,16 +8,10 @@ final usersRef = FirebaseFirestore.instance.collection('users');
 class Timeline extends StatefulWidget {
   @override
   _TimelineState createState() => _TimelineState();
-
-  static String name = "";
-  Timeline(name) {
-    Timeline.name = name;
-  }
 }
 
 class _TimelineState extends State<Timeline> {
   List<dynamic> users = [];
-  String name = Timeline.name;
 
   @override
   void initState() {
@@ -64,11 +58,10 @@ class _TimelineState extends State<Timeline> {
           if (!snapshot.hasData) {
             return circularProgress();
           }
-          // Firestore.instance.collection('users').where('designer',isEqualTo:true).getDocuments(),
           final List<Text> children = snapshot.data!.docs
               .map(
                 (doc) => Text(
-                  doc['name'],
+                  doc['displayName'],
                   style: TextStyle(fontSize: 20.0),
                 ),
               )

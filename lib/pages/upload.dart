@@ -267,7 +267,7 @@ class _UploadState extends State<Upload>
               width: 250.0,
               child: TextField(
                 controller: descriptionController,
-                maxLines: 8,
+                maxLines: 5,
                 decoration: InputDecoration(
                   hintText: "Enter a description...",
                   // border: InputBorder.none,
