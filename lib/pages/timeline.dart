@@ -67,7 +67,7 @@ class _TimelineState extends State<Timeline> {
           final List<Text> children = snapshot.data!.docs
               .map(
                 (doc) => Text(
-                  doc['username'],
+                  doc['name'],
                   style: TextStyle(fontSize: 20.0),
                 ),
               )
