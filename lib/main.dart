@@ -14,6 +14,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FlutterShare',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+        accentColor: Colors.deepPurple[100],
+        brightness: Brightness.dark,
+      ),
       home: Home(),
     );
   }
