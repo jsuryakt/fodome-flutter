@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:fodome/pages/activity_feed.dart';
@@ -6,8 +7,11 @@ import 'package:fodome/pages/timeline.dart';
 import 'package:fodome/pages/upload.dart';
 import 'package:fodome/pages/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:fodome/pages/create_account.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
+final usersRef = FirebaseFirestore.instance.collection('users');
+final DateTime timestamp = DateTime.now();
 
 class Home extends StatefulWidget {
   @override
@@ -16,7 +20,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool isAuth = false;
-  String? name = "";
   PageController? pageController;
   int pageIndex = 0;
 
@@ -40,14 +43,37 @@ class _HomeState extends State<Home> {
 
   handleSignIn(GoogleSignInAccount? account) {
     if (account != null) {
-      name = account.displayName;
-      print('User signed in: $account');
+      createUserInFirestore();
       setState(() {
         isAuth = true;
       });
     } else {
       setState(() {
         isAuth = false;
+      });
+    }
+  }
+
+  createUserInFirestore() async {
+    // 1) check if user exists in users collection in database (according to their id)
+    final GoogleSignInAccount? user = googleSignIn.currentUser;
+    final DocumentSnapshot doc = await usersRef.doc(user!.id).get();
+
+    if (!doc.exists) {
+      // 2) if the user doesn't exist, then we want to take them to the create account page
+      final getDetails = await Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+      var username = getDetails[0];
+      var name = getDetails[1];
+      // 3) get username from create account, use it to make new user document in users collection
+      usersRef.doc(user.id).set({
+        "id": user.id,
+        "username": username,
+        "photoUrl": user.photoUrl,
+        "email": user.email,
+        "displayName": name,
+        "bio": "",
+        "timestamp": timestamp,
       });
     }
   }
@@ -73,8 +99,10 @@ class _HomeState extends State<Home> {
   }
 
   onTap(int pageIndex) {
-    pageController?.jumpToPage(
+    pageController?.animateToPage(
       pageIndex,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
@@ -82,8 +110,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         children: <Widget>[
-          Timeline(name),
-          // ActivityFeed(),
+          Timeline(),
           Upload(),
           Donation(),
           Profile(googleSignIn),
@@ -114,50 +141,6 @@ class _HomeState extends State<Home> {
           ]),
     );
   }
-
-  // Widget buildAuthScreen() {
-  //   return MaterialApp(
-  //     home: SafeArea(
-  //       child: Container(
-  //         color: Colors.white,
-  //         child: Column(
-  //           children: [
-  //             Text(
-  //               "Welcome to Fodome",
-  //               style: TextStyle(
-  //                 decoration: TextDecoration.none,
-  //                 color: Colors.black,
-  //                 fontFamily: 'Signatra',
-  //                 fontSize: 70.0,
-  //               ),
-  //             ),
-  //             Text(
-  //               "Hello $name",
-  //               style: TextStyle(
-  //                 decoration: TextDecoration.none,
-  //                 color: Colors.red,
-  //                 fontFamily: 'Signatra',
-  //                 fontSize: 50.0,
-  //               ),
-  //             ),
-  //             VerticalDivider(
-  //               width: 100.0,
-  //             ),
-  //             TextButton(
-  //               child: Text(
-  //                 "Logout",
-  //                 style: TextStyle(
-  //                   fontSize: 30.0,
-  //                 ),
-  //               ),
-  //               onPressed: logout,
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Scaffold buildNonAuthScreen() {
     return Scaffold(
