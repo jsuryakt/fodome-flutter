@@ -6,10 +6,16 @@ import 'package:fodome/models/user.dart';
 import 'package:fodome/widgets/header.dart';
 
 import 'dart:io';
-
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fodome/pages/home.dart';
+import 'package:fodome/widgets/progress.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as Im;
+import 'package:uuid/uuid.dart';
 // ignore: unused_import
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -20,6 +26,7 @@ final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
   ),
 );
 
+FirebaseStorage storage = FirebaseStorage.instance;
 final ImagePicker _picker = ImagePicker();
 
 class Upload extends StatefulWidget {
@@ -30,9 +37,17 @@ class Upload extends StatefulWidget {
   _UploadState createState() => _UploadState();
 }
 
-class _UploadState extends State<Upload> {
-  PickedFile? file;
+class _UploadState extends State<Upload>
+    with AutomaticKeepAliveClientMixin<Upload> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController quantityController = TextEditingController();
+  TextEditingController shelflifeController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
 
+  PickedFile? file;
+  bool isUploading = false;
+  String postId = Uuid().v4();
   var image;
 
   handleTakePhoto() async {
@@ -115,6 +130,65 @@ class _UploadState extends State<Upload> {
     });
   }
 
+  compressImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+    Im.Image? imageFile = Im.decodeImage(image.readAsBytesSync());
+    final compressedImageFile = File('$path/img_$postId.jpg')
+      ..writeAsBytesSync(Im.encodeJpg(imageFile!, quality: 85));
+    setState(() {
+      image = compressedImageFile;
+    });
+  }
+
+  Future<String> uploadImage(imageFile) async {
+    Reference ref = storage.ref().child("post_$postId.jpg");
+    UploadTask uploadTask = ref.putFile(imageFile);
+    String downloadUrl = "";
+    uploadTask.then((res) async {
+      downloadUrl = await res.ref.getDownloadURL();
+    });
+    return downloadUrl;
+  }
+
+  // createPostInFirestore(
+  //     {String? mediaUrl, String? location, String? description}) {
+  //   postsRef
+  //       .document(widget.currentUser.id)
+  //       .collection("userPosts")
+  //       .document(postId)
+  //       .setData({
+  //     "postId": postId,
+  //     "ownerId": widget.currentUser!.id,
+  //     "username": widget.currentUser!.username,
+  //     "mediaUrl": mediaUrl,
+  //     "description": description,
+  //     "location": location,
+  //     "timestamp": timestamp,
+  //     "likes": {},
+  //   });
+  // }
+
+  // handleSubmit() async {
+  //   setState(() {
+  //     isUploading = true;
+  //   });
+  //   await compressImage();
+  //   String mediaUrl = await uploadImage(file);
+  //   createPostInFirestore(
+  //     mediaUrl: mediaUrl,
+  //     location: locationController.text,
+  //     description: captionController.text,
+  //   );
+  //   captionController.clear();
+  //   locationController.clear();
+  //   setState(() {
+  //     file = null;
+  //     isUploading = false;
+  //     postId = Uuid().v4();
+  //   });
+  // }
+
   Scaffold buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
@@ -128,7 +202,12 @@ class _UploadState extends State<Upload> {
         ),
         actions: [
           TextButton(
-            onPressed: () => print('pressed'),
+            onPressed: isUploading
+                ? null
+                : () {
+                    print("Pressed");
+                  },
+            //=> handleSubmit()
             child: Text(
               "Post",
               style: TextStyle(
@@ -142,6 +221,7 @@ class _UploadState extends State<Upload> {
       ),
       body: ListView(
         children: <Widget>[
+          isUploading ? linearProgress() : Text(""),
           Container(
             height: 220.0,
             width: MediaQuery.of(context).size.width * 0.8,
@@ -170,6 +250,7 @@ class _UploadState extends State<Upload> {
             title: Container(
               width: 250.0,
               child: TextField(
+                controller: titleController,
                 decoration: InputDecoration(
                   hintText: "Enter a title...",
                   // border: InputBorder.none,
@@ -185,6 +266,7 @@ class _UploadState extends State<Upload> {
             title: Container(
               width: 250.0,
               child: TextField(
+                controller: descriptionController,
                 maxLines: 8,
                 decoration: InputDecoration(
                   hintText: "Enter a description...",
@@ -201,6 +283,7 @@ class _UploadState extends State<Upload> {
             title: Container(
               width: 250.0,
               child: TextField(
+                controller: quantityController,
                 decoration: InputDecoration(
                   hintText: "Enter details about weight and quantity...",
                   // border: InputBorder.none,
@@ -216,6 +299,7 @@ class _UploadState extends State<Upload> {
             title: Container(
               width: 250.0,
               child: TextField(
+                controller: shelflifeController,
                 decoration: InputDecoration(
                   hintText: "Best time to eat before expiry...",
                   // border: InputBorder.none,
@@ -233,6 +317,7 @@ class _UploadState extends State<Upload> {
             title: Container(
               width: 250.0,
               child: TextField(
+                controller: locationController,
                 decoration: InputDecoration(
                   hintText: "Where was this photo taken?",
                   border: InputBorder.none,
@@ -251,7 +336,8 @@ class _UploadState extends State<Upload> {
               ),
               style: raisedButtonStyle,
               // color: Colors.blue,
-              onPressed: () => print('get user location'),
+              onPressed: () {},
+              //getUserLocation
               icon: Icon(
                 Icons.my_location,
                 color: Colors.white,
@@ -263,8 +349,28 @@ class _UploadState extends State<Upload> {
     );
   }
 
+  // getUserLocation() async {
+  //   Position position = await Geolocator()
+  //       .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  //   List<Placemark> placemarks = await Geolocator()
+  //       .placemarkFromCoordinates(position.latitude, position.longitude);
+  //   Placemark placemark = placemarks[0];
+  //   String completeAddress =
+  //       '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+  //   print(completeAddress);
+  //   String formattedAddress = "${placemark.locality}, ${placemark.country}";
+  //   locationController.text = formattedAddress;
+  // }
+
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return file == null ? buildSplashScreen() : buildUploadForm();
   }
+
+  // @override
+  // // TODO: implement wantKeepAlive
+  // bool get wantKeepAlive => throw UnimplementedError();
 }

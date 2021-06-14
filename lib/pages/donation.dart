@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:fodome/color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -7,57 +8,35 @@ class Donation extends StatefulWidget {
   _DonationState createState() => _DonationState();
 }
 
-_link1() async {
-  const url = 'https://www.giveindia.org/missions/mission-no-child-hungry';
+_linkToOpenInWebView(url) async {
   if (await canLaunch(url)) {
-    await launch(url);
+    await launch(
+      url,
+      // forceSafariVC: true,
+      forceWebView: true,
+      enableJavaScript: true,
+    );
   } else {
     throw 'Could not launch $url';
   }
 }
-_link2() async {
-  const url = 'https://www.riseagainsthunger.org/?form=meettheneed2021';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
-_link3() async {
-  const url = 'https://www.akshayapatra.org/onlinedonations';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
-_link4() async {
-  const url = 'https://www.welthungerhilfe.org/our-work/countries/india/';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
-
-
 
 class _DonationState extends State<Donation> {
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Colors.purple[50],
+        backgroundColor: Colors.purple[50],
         appBar: AppBar(
           // leading: Icon(Icons.menu),
           title: Padding(
-            padding: const EdgeInsets.only(left : 12.0),
+            padding: const EdgeInsets.only(left: 12.0),
             child: Text(
-                "Donate",
-                style: TextStyle(
-                  fontFamily: "Signatra",
-                  fontSize: 40.0,
-                  color: Colors.white,
-                ),
+              "Donate",
+              style: TextStyle(
+                fontFamily: "Signatra",
+                fontSize: 40.0,
+                color: Colors.white,
               ),
+            ),
           ),
           actions: [
             Padding(
@@ -68,21 +47,18 @@ class _DonationState extends State<Donation> {
           ],
           backgroundColor: Colors.purple,
         ),
-        body:
-      ListView(
+        body: ListView(
           padding: EdgeInsets.all(16),
           children: [
-          
             buildImageInteractionCard1(),
-              buildImageInteractionCard2(),
-                buildImageInteractionCard3(),
-                  buildImageInteractionCard4(),
+            buildImageInteractionCard2(),
+            buildImageInteractionCard3(),
+            buildImageInteractionCard4(),
           ],
         ),
       );
 
- 
-       Widget buildImageInteractionCard1() => Card(
+  Widget buildImageInteractionCard1() => Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -93,7 +69,7 @@ class _DonationState extends State<Donation> {
               children: [
                 Ink.image(
                   image: NetworkImage(
-                'https://cdn.givind.org/static/images/sharing-banner.jpg',
+                    'https://cdn.givind.org/static/images/sharing-banner.jpg',
                   ),
                   height: 240,
                   fit: BoxFit.cover,
@@ -116,25 +92,26 @@ class _DonationState extends State<Donation> {
             ButtonBar(
               alignment: MainAxisAlignment.start,
               children: [
-                FlatButton(
+                TextButton(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 140),
-                    child: Text('Donate',
+                    child: Text(
+                      'Donate',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        
                       ),
                     ),
                   ),
-                   onPressed: _link1,
+                  onPressed: () => _linkToOpenInWebView(
+                      "https://www.giveindia.org/missions/mission-no-child-hungry"),
                 ),
               ],
             )
           ],
         ),
       );
-      Widget buildImageInteractionCard2() => Card(
+  Widget buildImageInteractionCard2() => Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -145,7 +122,7 @@ class _DonationState extends State<Donation> {
               children: [
                 Ink.image(
                   image: NetworkImage(
-                'https://www.riseagainsthungerindia.org/wp-content/uploads/2020/03/RAHlogo_india-01-scaled-e1593010950565.jpg',
+                    'https://www.riseagainsthungerindia.org/wp-content/uploads/2020/03/RAHlogo_india-01-scaled-e1593010950565.jpg',
                   ),
                   height: 240,
                   fit: BoxFit.cover,
@@ -168,25 +145,26 @@ class _DonationState extends State<Donation> {
             ButtonBar(
               alignment: MainAxisAlignment.start,
               children: [
-                FlatButton(
-                 child: Padding(
+                TextButton(
+                  child: Padding(
                     padding: const EdgeInsets.only(left: 140),
-                    child: Text('Donate',
+                    child: Text(
+                      'Donate',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        
                       ),
                     ),
                   ),
-                   onPressed: _link2,
+                  onPressed: () => _linkToOpenInWebView(
+                      'https://www.riseagainsthunger.org/?form=meettheneed2021'),
                 ),
               ],
             )
           ],
         ),
       );
-      Widget buildImageInteractionCard3() => Card(
+  Widget buildImageInteractionCard3() => Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -197,7 +175,7 @@ class _DonationState extends State<Donation> {
               children: [
                 Ink.image(
                   image: NetworkImage(
-                'https://pbs.twimg.com/profile_images/1074995644383678464/aBdy_9zC_400x400.jpg',
+                    'https://pbs.twimg.com/profile_images/1074995644383678464/aBdy_9zC_400x400.jpg',
                   ),
                   height: 240,
                   fit: BoxFit.cover,
@@ -220,26 +198,26 @@ class _DonationState extends State<Donation> {
             ButtonBar(
               alignment: MainAxisAlignment.start,
               children: [
-                FlatButton(
+                TextButton(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 140),
-                    child: Text('Donate',
+                    child: Text(
+                      'Donate',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        
                       ),
                     ),
                   ),
-                   onPressed: _link3,
+                  onPressed: () => _linkToOpenInWebView(
+                      'https://www.akshayapatra.org/onlinedonations'),
                 ),
-                
               ],
             )
           ],
         ),
       );
-      Widget buildImageInteractionCard4() => Card(
+  Widget buildImageInteractionCard4() => Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
@@ -273,24 +251,23 @@ class _DonationState extends State<Donation> {
             ButtonBar(
               alignment: MainAxisAlignment.start,
               children: [
-                FlatButton(
+                TextButton(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 140),
-                    child: Text('Donate',
+                    child: Text(
+                      'Donate',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        
                       ),
                     ),
                   ),
-                  onPressed: _link4,
+                  onPressed: () => _linkToOpenInWebView(
+                      'https://www.welthungerhilfe.org/our-work/countries/india/'),
                 ),
               ],
             )
           ],
         ),
       );
-      
-      
 }

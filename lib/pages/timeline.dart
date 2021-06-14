@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fodome/widgets/header.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fodome/widgets/progress.dart';
+
+final usersRef = FirebaseFirestore.instance.collection('users');
 
 class Timeline extends StatefulWidget {
   @override
@@ -12,7 +16,38 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
+  List<dynamic> users = [];
   String name = Timeline.name;
+
+  @override
+  void initState() {
+    // getUsers();
+    // getUsers();
+    super.initState();
+  }
+
+  // getUsers() async {
+  //   final snapshot = await usersRef.get();
+
+  //   setState(() {
+  //     users = snapshot.docs;
+  //   });
+  // }
+  // usersRef.get().then((QuerySnapshot snapshot) {
+  //   snapshot.docs.forEach((DocumentSnapshot doc) {
+  //     print(doc.data());
+  //     print(doc.id);
+  //     print(doc.exists);
+  //   });
+  // });
+
+  // getUserById() async {
+  //   final String id = "1u9Qpt4KXc4oFo8pzFOB";
+  //   final DocumentSnapshot doc = await usersRef.doc(id).get();
+  //   print(doc.data());
+  //   print("OOOOOOOOOOOOOOOOOOOOOOOOOOOO" + doc.id);
+  //   print(doc.exists);
+  // }
 
   @override
   Widget build(context) {
@@ -23,9 +58,26 @@ class _TimelineState extends State<Timeline> {
         font: "Signatra",
         fontSize: 55.0,
       ),
-      body: Text(
-        "Welcome $name",
-        style: TextStyle(fontSize: 30.0),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: usersRef.snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return circularProgress();
+          }
+          final List<Text> children = snapshot.data!.docs
+              .map(
+                (doc) => Text(
+                  doc['username'],
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              )
+              .toList();
+          return Container(
+            child: ListView(
+              children: children,
+            ),
+          );
+        },
       ),
     );
   }
