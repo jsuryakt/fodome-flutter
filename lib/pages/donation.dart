@@ -30,12 +30,15 @@ class _DonationState extends State<Donation> {
           children: [
             Stack(
               children: [
-                Ink.image(
-                  image: NetworkImage(
-                    imageURL,
+                TextButton(
+                  onPressed: () => _linkToOpenInWebView(link),
+                  child: Ink.image(
+                    image: NetworkImage(
+                      imageURL,
+                    ),
+                    height: 240,
+                    fit: BoxFit.cover,
                   ),
-                  height: 240,
-                  fit: BoxFit.cover,
                 ),
               ],
             ),
@@ -53,7 +56,7 @@ class _DonationState extends State<Donation> {
             'Donate',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
+              fontSize: 20,
             ),
           ),
           onPressed: () => _linkToOpenInWebView(url),

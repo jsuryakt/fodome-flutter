@@ -64,6 +64,7 @@ class _TimelineState extends State<Timeline> {
           if (!snapshot.hasData) {
             return circularProgress();
           }
+          // Firestore.instance.collection('users').where('designer',isEqualTo:true).getDocuments(),
           final List<Text> children = snapshot.data!.docs
               .map(
                 (doc) => Text(
