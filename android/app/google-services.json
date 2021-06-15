@@ -14,11 +14,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "597610292401-8t03r1vqnrrcv6jt2jt88ldd3uijfj2q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "36a2e5d05215e24a262969f64d74810784a3d485"
+          }
+        },
+        {
+          "client_id": "597610292401-cb53qeqc3mkuj8lnp0n49u62cntiugap.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "b8a5b5f2e8672af818106ff0b05d31b9e66cdcfa"
+          }
+        },
+        {
           "client_id": "597610292401-co6nck7v2b4e470nehvvuvasm4s114ep.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.jsuryakt.fodome",
             "certificate_hash": "b8c6541c61980b164b66d25255137848795232dc"
+          }
+        },
+        {
+          "client_id": "597610292401-lml2jl3c60kh5aohaa32r8cneppkmvhi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "dc95746632a2be86315a724c11f841f3f40b93d9"
           }
         },
         {

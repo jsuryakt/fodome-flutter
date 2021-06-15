@@ -30,6 +30,7 @@ dependencies:
   firebase_auth: ^1.4.1
   google_sign_in: ^5.0.4
   geolocator: ^7.0.3
+  geocoding: ^2.0.0
   uuid: ^3.0.4
   image: ^3.0.2
   animator: ^3.0.0

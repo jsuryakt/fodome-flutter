@@ -58,18 +58,19 @@ class _TimelineState extends State<Timeline> {
           if (!snapshot.hasData) {
             return circularProgress();
           }
-          final List<Text> children = snapshot.data!.docs
+          final List<Widget> children = snapshot.data!.docs
               .map(
-                (doc) => Text(
-                  doc['displayName'],
-                  style: TextStyle(fontSize: 20.0),
+                (doc) => TextButton(
+                  onPressed: () => () {},
+                  child: Ink.image(
+                    image: NetworkImage(doc['photoUrl']),
+                    height: 100,
+                  ),
                 ),
               )
               .toList();
-          return Container(
-            child: ListView(
-              children: children,
-            ),
+          return Column(
+            children: children,
           );
         },
       ),
