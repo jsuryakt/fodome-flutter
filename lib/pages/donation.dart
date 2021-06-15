@@ -57,7 +57,7 @@ class _DonationState extends State<Donation> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Colors.red,
+              color: Colors.deepOrange,
             ),
           ),
           onPressed: () => _linkToOpenInWebView(url),
