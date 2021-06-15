@@ -74,13 +74,21 @@ class _TimelineState extends State<Timeline> {
                           ),
                           Text(
                             "Posted by " + doc['displayName'],
-                            style: TextStyle(fontSize: 15.0),
+                            style: TextStyle(
+                                fontSize: 15.0, color: Colors.grey[600]),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Location - " + doc['location'],
-                              style: TextStyle(fontSize: 15.0),
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.pin_drop,
+                                color: Colors.green,
+                                size: 35.0,
+                              ),
+                              title: Text(
+                                doc['location'],
+                                style: TextStyle(fontSize: 15.0),
+                              ),
                             ),
                           ),
                         ],
