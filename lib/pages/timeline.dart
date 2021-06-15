@@ -16,33 +16,8 @@ class _TimelineState extends State<Timeline> {
 
   @override
   void initState() {
-    // getUsers();
-    // getUsers();
     super.initState();
   }
-
-  // getUsers() async {
-  //   final snapshot = await usersRef.get();
-
-  //   setState(() {
-  //     users = snapshot.docs;
-  //   });
-  // }
-  // usersRef.get().then((QuerySnapshot snapshot) {
-  //   snapshot.docs.forEach((DocumentSnapshot doc) {
-  //     print(doc.data());
-  //     print(doc.id);
-  //     print(doc.exists);
-  //   });
-  // });
-
-  // getUserById() async {
-  //   final String id = "1u9Qpt4KXc4oFo8pzFOB";
-  //   final DocumentSnapshot doc = await usersRef.doc(id).get();
-  //   print(doc.data());
-  //   print("OOOOOOOOOOOOOOOOOOOOOOOOOOOO" + doc.id);
-  //   print(doc.exists);
-  // }
 
   @override
   Widget build(context) {
@@ -54,7 +29,7 @@ class _TimelineState extends State<Timeline> {
         fontSize: 55.0,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: timelineRef.snapshots(),
+        stream: timelineRef.orderBy('timestamp', descending: true).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
