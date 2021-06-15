@@ -10,6 +10,19 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Languages')),
+      body: ListView(
+        children: <Widget>[
+          ListTile(
+            title: Text('English'),
+          ),
+          ListTile(
+            title: Text('Kannada'),
+          ),
+          ListTile(
+            title: Text('Hindi'),
+          ),
+        ],
+      ),
     );
   }
 }
