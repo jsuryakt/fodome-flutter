@@ -59,7 +59,7 @@ class _TimelineState extends State<Timeline> {
           if (!snapshot.hasData) {
             return circularProgress();
           }
-          final List<Widget> children = snapshot.data!.docs
+          List<Widget> children = snapshot.data!.docs
               .map(
                 (doc) => Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -101,12 +101,19 @@ class _TimelineState extends State<Timeline> {
               )
               .toList();
           return Container(
-            child: ListView(
-              children: children,
+            child: RefreshIndicator(
+              onRefresh: _pullRefresh,
+              child: ListView(
+                children: children,
+              ),
             ),
           );
         },
       ),
     );
+  }
+
+  Future<void> _pullRefresh() async {
+    print("Refresh");
   }
 }
