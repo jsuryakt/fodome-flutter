@@ -142,7 +142,7 @@ class _UploadState extends State<Upload>
   }
 
   Future<String> uploadImage(imageFile) async {
-    firebase_storage.Reference ref = storage.ref().child('post_$postId.jpg}');
+    firebase_storage.Reference ref = storage.ref().child('post_$postId.jpg');
     firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
     print('File Uploaded');
     var imageUrl = await (await uploadTask).ref.getDownloadURL();

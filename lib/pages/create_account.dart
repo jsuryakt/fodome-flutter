@@ -21,11 +21,11 @@ class _CreateAccountState extends State<CreateAccount> {
           .showSnackBar(SnackBar(content: Text('Welcome $name')));
       Timer(Duration(seconds: 2), () {
         Navigator.pop(context, lst);
-        try {
-          Navigator.pop(context, []);
-        } on Exception catch (_) {
-          print('never reached');
-        }
+        // try {
+        //   Navigator.pop(context, []);
+        // } on Exception catch (_) {
+        //   print('never reached');
+        // }
       });
     }
   }
