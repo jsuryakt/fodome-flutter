@@ -44,7 +44,7 @@ class _UploadState extends State<Upload>
   TextEditingController shelflifeController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-  String downloadUrl = "";
+  // String downloadUrl = "";
   PickedFile? file;
   bool isUploading = false;
   String postId = Uuid().v4();
@@ -142,22 +142,16 @@ class _UploadState extends State<Upload>
   }
 
   Future<String> uploadImage(imageFile) async {
-    firebase_storage.Reference ref =
-        await storage.ref().child("post_$postId.jpg");
+    firebase_storage.Reference ref = storage.ref().child('post_$postId.jpg}');
     firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
-    uploadTask.whenComplete(() async {
-      downloadUrl = await ref.getDownloadURL();
-      setState(() {
-        this.downloadUrl = downloadUrl;
-      });
-    }).catchError((onError) {
-      print(onError);
-    });
-    return downloadUrl;
+    print('File Uploaded');
+    var imageUrl = await (await uploadTask).ref.getDownloadURL();
+    String url = imageUrl.toString();
+    return url;
   }
 
   createPostInFirestore(
-      {String? mediaUrl,
+      {required String mediaUrl,
       String? location,
       String? title,
       String? description,
@@ -182,9 +176,12 @@ class _UploadState extends State<Upload>
     setState(() {
       isUploading = true;
     });
-    await compressImage();
+    compressImage();
     String mediaUrl = await uploadImage(image);
-    print("MEDIA" + mediaUrl);
+    // print("IMAGEEEEEEEE");
+    // print(image);
+    // print("MEDIA");
+    // print(mediaUrl);
     createPostInFirestore(
       mediaUrl: mediaUrl,
       location: locationController.text,
@@ -335,6 +332,7 @@ class _UploadState extends State<Upload>
               width: 250.0,
               child: TextField(
                 controller: locationController,
+                maxLines: 4,
                 decoration: InputDecoration(
                   hintText: "Where was this photo taken?",
                   border: InputBorder.none,
@@ -377,7 +375,8 @@ class _UploadState extends State<Upload>
         '${placemark.subThoroughfare} ${placemark.thoroughfare}, ${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
     print(completeAddress);
     String formattedAddress = "${placemark.locality}, ${placemark.country}";
-    locationController.text = formattedAddress;
+    locationController.text = completeAddress;
+    ;
   }
 
   bool get wantKeepAlive => true;
