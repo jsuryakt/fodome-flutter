@@ -70,7 +70,7 @@ class _TimelineState extends State<Timeline> {
               )
               .toList();
           return Column(
-            children: children,
+            children:children,
           );
         },
       ),
