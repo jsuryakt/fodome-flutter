@@ -34,9 +34,7 @@ class _ProfileState extends State<Profile> {
           SettingsSection(
             title: 'Account',
             tiles: [
-              SettingsTile(
-                  title: 'Edit Profile', leading: Icon(Icons.account_box)),
-              SettingsTile(title: 'Change Password', leading: Icon(Icons.lock)),
+              SettingsTile(title: 'Edit Profile', leading: Icon(Icons.account_box)),
               SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
               SettingsTile(title: 'Email', leading: Icon(Icons.email)),
               SettingsTile(
