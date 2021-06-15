@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fodome/pages/home.dart';
 import 'package:fodome/widgets/header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
@@ -53,24 +54,56 @@ class _TimelineState extends State<Timeline> {
         fontSize: 55.0,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: usersRef.snapshots(),
+        stream: timelineRef.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
           }
           final List<Widget> children = snapshot.data!.docs
               .map(
-                (doc) => TextButton(
-                  onPressed: () => () {},
-                  child: Ink.image(
-                    image: NetworkImage(doc['photoUrl']),
-                    height: 100,
+                (doc) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        doc['title'],
+                        style: TextStyle(fontSize: 25.0),
+                      ),
+                      TextButton(
+                        onPressed: () => () {},
+                        child: Ink.image(
+                          image: NetworkImage(doc['mediaUrl']),
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Text(
+                        doc['description'],
+                        style: TextStyle(fontSize: 22.0),
+                      ),
+                      VerticalDivider(
+                        indent: 10.0,
+                      ),
+                      Text(
+                        "Posted by " + doc['displayName'],
+                        style: TextStyle(fontSize: 15.0),
+                      ),
+                      Text(
+                        "Location " + doc['location'],
+                        style: TextStyle(fontSize: 15.0),
+                      ),
+                      Divider(
+                        color: Colors.black,
+                      ),
+                    ],
                   ),
                 ),
               )
               .toList();
-          return Column(
-            children: children,
+          return Container(
+            child: ListView(
+              children: children,
+            ),
           );
         },
       ),
