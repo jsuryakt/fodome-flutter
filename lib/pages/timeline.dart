@@ -28,6 +28,7 @@ class _TimelineState extends State<Timeline> {
         font: "Signatra",
         fontSize: 55.0,
       ),
+      backgroundColor: Colors.purple[50],
       body: StreamBuilder<QuerySnapshot>(
         stream: timelineRef.orderBy('timestamp', descending: true).snapshots(),
         builder: (context, snapshot) {
@@ -36,41 +37,55 @@ class _TimelineState extends State<Timeline> {
           }
           List<Widget> children = snapshot.data!.docs
               .map(
-                (doc) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        doc['title'],
-                        style: TextStyle(fontSize: 25.0),
+                (doc) => Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      TextButton(
-                        onPressed: () => () {},
-                        child: Ink.image(
-                          image: NetworkImage(doc['mediaUrl']),
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              doc['title'],
+                              style: TextStyle(fontSize: 25.0),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => () {},
+                            child: Ink.image(
+                              image: NetworkImage(doc['mediaUrl']),
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              doc['description'],
+                              style: TextStyle(fontSize: 22.0),
+                            ),
+                          ),
+                          VerticalDivider(
+                            indent: 10.0,
+                          ),
+                          Text(
+                            "Posted by " + doc['displayName'],
+                            style: TextStyle(fontSize: 15.0),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Location - " + doc['location'],
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        doc['description'],
-                        style: TextStyle(fontSize: 22.0),
-                      ),
-                      VerticalDivider(
-                        indent: 10.0,
-                      ),
-                      Text(
-                        "Posted by " + doc['displayName'],
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                      Text(
-                        "Location " + doc['location'],
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                      Divider(
-                        color: Colors.black,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               )
