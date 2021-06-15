@@ -170,6 +170,21 @@ class _UploadState extends State<Upload>
       "shelfLife": shelfLife,
       "quantity": quantity,
     });
+
+    timelineRef.add({
+      "postId": postId,
+      "ownerId": currentUser!.id,
+      "username": currentUser!.username,
+      "displayName": currentUser!.displayName,
+      "mediaUrl": mediaUrl,
+      "description": description,
+      "location": location,
+      "timestamp": timestamp,
+      "title": title,
+      "shelfLife": shelfLife,
+      "quantity": quantity,
+      "isVerified": false,
+    });
   }
 
   handleSubmit() async {

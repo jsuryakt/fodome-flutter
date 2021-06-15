@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fodome/pages/home.dart';
 import 'package:fodome/widgets/header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
@@ -52,28 +53,82 @@ class _TimelineState extends State<Timeline> {
         font: "Signatra",
         fontSize: 55.0,
       ),
+      backgroundColor: Colors.purple[50],
       body: StreamBuilder<QuerySnapshot>(
-        stream: usersRef.snapshots(),
+        stream: timelineRef.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return circularProgress();
           }
-          final List<Widget> children = snapshot.data!.docs
+          List<Widget> children = snapshot.data!.docs
               .map(
-                (doc) => TextButton(
-                  onPressed: () => () {},
-                  child: Ink.image(
-                    image: NetworkImage(doc['photoUrl']),
-                    height: 100,
+                (doc) => Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              doc['title'],
+                              style: TextStyle(fontSize: 25.0),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => () {},
+                            child: Ink.image(
+                              image: NetworkImage(doc['mediaUrl']),
+                              height: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              doc['description'],
+                              style: TextStyle(fontSize: 22.0),
+                            ),
+                          ),
+                          VerticalDivider(
+                            indent: 10.0,
+                          ),
+                          Text(
+                            "Posted by " + doc['displayName'],
+                            style: TextStyle(fontSize: 15.0),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Location - " + doc['location'],
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               )
               .toList();
-          return Column(
-            children:children,
+          return Container(
+            child: RefreshIndicator(
+              onRefresh: _pullRefresh,
+              child: ListView(
+                children: children,
+              ),
+            ),
           );
         },
       ),
     );
+  }
+
+  Future<void> _pullRefresh() async {
+    print("Refresh");
   }
 }

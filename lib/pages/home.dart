@@ -16,6 +16,7 @@ final usersRef = FirebaseFirestore.instance.collection('users');
 final firebase_storage.Reference storageRef =
     firebase_storage.FirebaseStorage.instance.ref();
 final postsRef = FirebaseFirestore.instance.collection('posts');
+final timelineRef = FirebaseFirestore.instance.collection('timeline');
 User? currentUser;
 
 class Home extends StatefulWidget {
