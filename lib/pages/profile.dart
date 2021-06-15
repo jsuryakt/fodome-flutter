@@ -61,6 +61,17 @@ class _ProfileState extends State<Profile> {
             ],
           ),
           SettingsSection(
+            title: 'Others',
+            tiles: [
+              SettingsTile(
+                  title: 'View notifications', leading: Icon(Icons.notifications)),
+              SettingsTile(
+                title: 'Submit Feedback',
+                leading: Icon(Icons.feedback_outlined),
+              ),
+            ],
+          ),
+          SettingsSection(
             title: 'Misc',
             tiles: [
               SettingsTile(
