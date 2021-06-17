@@ -44,7 +44,6 @@ class _UploadState extends State<Upload>
   TextEditingController shelflifeController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-  // String downloadUrl = "";
   PickedFile? file;
   bool isUploading = false;
   String postId = Uuid().v4();
@@ -193,10 +192,6 @@ class _UploadState extends State<Upload>
     });
     compressImage();
     String mediaUrl = await uploadImage(image);
-    // print("IMAGEEEEEEEE");
-    // print(image);
-    // print("MEDIA");
-    // print(mediaUrl);
     createPostInFirestore(
       mediaUrl: mediaUrl,
       location: locationController.text,
@@ -232,11 +227,6 @@ class _UploadState extends State<Upload>
         actions: [
           TextButton(
             onPressed: () => handleSubmit(),
-            // isUploading
-            //     ? null
-            //     : () {
-            //         handleSubmit();
-            //       },
             child: Text(
               "Post",
               style: TextStyle(
@@ -365,7 +355,6 @@ class _UploadState extends State<Upload>
                 style: TextStyle(color: Colors.white),
               ),
               style: raisedButtonStyle,
-              // color: Colors.blue,
               onPressed: () {
                 getUserLocation();
               },
@@ -387,12 +376,9 @@ class _UploadState extends State<Upload>
         .placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark placemark = placemarks[0];
     String completeAddress =
-        // ${placemark.subThoroughfare} ${placemark.thoroughfare},
         '${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
     print(completeAddress);
-    // String formattedAddress = "${placemark.locality}, ${placemark.country}";
     locationController.text = completeAddress;
-    ;
   }
 
   bool get wantKeepAlive => true;
@@ -402,8 +388,4 @@ class _UploadState extends State<Upload>
     super.build(context);
     return file == null ? buildSplashScreen() : buildUploadForm();
   }
-
-  // @override
-  // // TODO: implement wantKeepAlive
-  // bool get wantKeepAlive => throw UnimplementedError();
 }

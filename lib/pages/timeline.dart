@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fodome/pages/home.dart';
-import 'package:fodome/widgets/header.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
+import 'package:fodome/pages/location.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 
@@ -12,6 +12,7 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
+  List shortAddrs = ["", "", "", ""];
   List<dynamic> users = [];
 
   @override
@@ -19,14 +20,70 @@ class _TimelineState extends State<Timeline> {
     super.initState();
   }
 
+  Text address(List shortAddrs) {
+    var text = "";
+    int flag = 0;
+    int lenghtOfArr = shortAddrs.length;
+    if (shortAddrs[lenghtOfArr - 1] != null) {
+      for (int idx = 0; idx < lenghtOfArr - 1; idx++) {
+        if (shortAddrs[idx].length > 2 && shortAddrs[idx + 1].length > 2) {
+          text = shortAddrs[idx] + ",\n" + shortAddrs[idx + 1];
+          if (idx <= 1) {
+            flag = 1;
+          }
+          break;
+        }
+      }
+    }
+    if (flag == 0) {
+      if (shortAddrs[0].length > 2 && shortAddrs[2].length > 2) {
+        text = shortAddrs[0] + ",\n" + shortAddrs[2];
+      } else if (shortAddrs[0].length > 2 && shortAddrs[3].length > 2) {
+        text = shortAddrs[0] + ",\n" + shortAddrs[3];
+      } else if (shortAddrs[1].length > 2 && shortAddrs[3].length > 2) {
+        text = shortAddrs[1] + ",\n" + shortAddrs[3];
+      }
+    }
+    return Text(
+      text,
+      style: TextStyle(
+        color: Colors.grey[200],
+        fontFamily: "Hind",
+        fontSize: 15.0,
+      ),
+    );
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: header(
-        context,
-        titleText: "Fodome",
-        font: "Signatra",
-        fontSize: 55.0,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.my_location_rounded),
+          onPressed: () async {
+            shortAddrs = await Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Location()));
+            setState(() {
+              this.shortAddrs = shortAddrs;
+            });
+          },
+        ),
+        title: Text(
+          "Fodome",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "Signatra",
+            fontSize: 55.0,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: Center(child: address(shortAddrs)),
+          )
+        ],
+        centerTitle: true,
+        backgroundColor: Colors.purple,
       ),
       backgroundColor: Colors.purple[50],
       body: StreamBuilder<QuerySnapshot>(

@@ -4,7 +4,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -23,6 +22,8 @@
    <application
         android:label="fodome"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+      android:value="AIzaSyC5rEL4wVgRwZvf_Oc_uCDmkWtftFtdFtI"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

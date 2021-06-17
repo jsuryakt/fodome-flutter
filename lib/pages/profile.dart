@@ -29,64 +29,70 @@ class _ProfileState extends State<Profile> {
         titleText: "User Settings",
         fontSize: 20.0,
       ),
-      body: SettingsList(
-        sections: [
-          SettingsSection(
-            title: 'Account',
-            tiles: [
-              SettingsTile(title: 'Edit Profile', leading: Icon(Icons.account_box)),
-              SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
-              SettingsTile(title: 'Email', leading: Icon(Icons.email)),
-              SettingsTile(
-                title: 'Logout',
-                leading: Icon(Icons.exit_to_app),
-                onTap: logout,
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: 'Customize',
-            tiles: [
-              SettingsTile(
-                title: 'Language',
-                subtitle: 'English',
-                leading: Icon(Icons.language),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => LanguagesScreen()));
-                },
-              ),
-              SettingsTile(title: 'Theme', leading: Icon(Icons.brush)),
-              SettingsTile(title: 'Payments', leading: Icon(Icons.payment)),
-            ],
-          ),
-          SettingsSection(
-            title: 'Others',
-            tiles: [
-              SettingsTile(
-                  title: 'View notifications', leading: Icon(Icons.notifications)),
-              SettingsTile(
-                title: 'Submit Feedback',
-                leading: Icon(Icons.feedback_outlined),
-              ),
-            ],
-          ),
-          SettingsSection(
-            title: 'Misc',
-            tiles: [
-              SettingsTile(
-                  title: 'Terms of Service', leading: Icon(Icons.description)),
-              SettingsTile(
-                title: 'About',
-                leading: Icon(Icons.perm_device_information),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => AboutPage()));
-                },
-              ),
-            ],
-          ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0),
+        child: SettingsList(
+          sections: [
+            SettingsSection(
+              title: 'Account',
+              tiles: [
+                SettingsTile(
+                    title: 'Edit Profile', leading: Icon(Icons.account_box)),
+                SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
+                SettingsTile(title: 'Email', leading: Icon(Icons.email)),
+                SettingsTile(
+                  title: 'Logout',
+                  leading: Icon(Icons.exit_to_app),
+                  onTap: logout,
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: 'Customize',
+              tiles: [
+                SettingsTile(
+                  title: 'Language',
+                  subtitle: 'English',
+                  leading: Icon(Icons.language),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => LanguagesScreen()));
+                  },
+                ),
+                SettingsTile(title: 'Theme', leading: Icon(Icons.brush)),
+                // SettingsTile(title: 'Payments', leading: Icon(Icons.payment)),
+              ],
+            ),
+            SettingsSection(
+              title: 'Others',
+              tiles: [
+                SettingsTile(
+                    title: 'View notifications',
+                    leading: Icon(Icons.notifications)),
+                SettingsTile(
+                  title: 'Submit Feedback',
+                  leading: Icon(Icons.feedback_outlined),
+                ),
+              ],
+            ),
+            SettingsSection(
+              title: 'Misc',
+              tiles: [
+                SettingsTile(
+                    title: 'Terms of Service',
+                    leading: Icon(Icons.description)),
+                SettingsTile(
+                  title: 'About',
+                  leading: Icon(Icons.perm_device_information),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => AboutPage()));
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
