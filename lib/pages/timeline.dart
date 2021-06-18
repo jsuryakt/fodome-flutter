@@ -11,7 +11,8 @@ class Timeline extends StatefulWidget {
   _TimelineState createState() => _TimelineState();
 }
 
-class _TimelineState extends State<Timeline> {
+class _TimelineState extends State<Timeline>
+    with AutomaticKeepAliveClientMixin<Timeline> {
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
 
@@ -25,8 +26,6 @@ class _TimelineState extends State<Timeline> {
     int flag = 0;
     try {
       var lengthOfArr = shortAddrs.length;
-      // print("HELLOOOO");
-      // print(lengthOfArr);
       if (shortAddrs[lengthOfArr - 1] != null) {
         for (int idx = 0; idx < lengthOfArr - 1; idx++) {
           if (shortAddrs[idx].length > 2 && shortAddrs[idx + 1].length > 2) {
@@ -60,20 +59,38 @@ class _TimelineState extends State<Timeline> {
     );
   }
 
+  gotoLocationPage() async {
+    shortAddrs = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Location()));
+    setState(() {
+      this.shortAddrs = shortAddrs;
+    });
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.my_location_rounded),
-          onPressed: () async {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Locating...')));
-            shortAddrs = await Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Location()));
-            setState(() {
-              this.shortAddrs = shortAddrs;
-            });
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3.0,
+                      ),
+                      height: 20.0,
+                      width: 20.0,
+                    ),
+                    Text("   Loading Map...")
+                  ],
+                ),
+              ),
+            );
+            gotoLocationPage();
           },
         ),
         title: Text(
@@ -179,4 +196,7 @@ class _TimelineState extends State<Timeline> {
   Future<void> _pullRefresh() async {
     print("Refresh");
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
