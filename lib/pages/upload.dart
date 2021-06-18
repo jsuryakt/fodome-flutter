@@ -23,7 +23,7 @@ final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
     borderRadius: BorderRadius.circular(8.0),
   ),
 );
-final DateTime timestamp = DateTime.now();
+late DateTime timestamp;
 firebase_storage.FirebaseStorage storage =
     firebase_storage.FirebaseStorage.instance;
 final ImagePicker _picker = ImagePicker();
@@ -44,6 +44,15 @@ class _UploadState extends State<Upload>
   TextEditingController shelflifeController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
+  // final _text = TextEditingController();
+  bool _validateTitle = false;
+  bool _validateDescription = false;
+  bool _validateQuantity = false;
+  bool _validateShelflife = false;
+  bool _validateLocation = false;
+
+  var lat = 0.0;
+  var long = 0.0;
   PickedFile? file;
   bool isUploading = false;
   String postId = Uuid().v4();
@@ -156,6 +165,9 @@ class _UploadState extends State<Upload>
       String? description,
       String? quantity,
       String? shelfLife}) {
+    setState(() {
+      timestamp = DateTime.now();
+    });
     postsRef.doc(currentUser!.id).collection("userPosts").doc(postId).set({
       "postId": postId,
       "ownerId": currentUser!.id,
@@ -183,13 +195,12 @@ class _UploadState extends State<Upload>
       "shelfLife": shelfLife,
       "quantity": quantity,
       "isVerified": false,
+      "latitude": lat,
+      "longitude": long,
     });
   }
 
   handleSubmit() async {
-    setState(() {
-      isUploading = true;
-    });
     compressImage();
     String mediaUrl = await uploadImage(image);
     createPostInFirestore(
@@ -226,7 +237,38 @@ class _UploadState extends State<Upload>
         ),
         actions: [
           TextButton(
-            onPressed: () => handleSubmit(),
+            onPressed: () {
+              setState(() {
+                titleController.text.trim().isEmpty
+                    ? _validateTitle = true
+                    : _validateTitle = false;
+                descriptionController.text.trim().isEmpty
+                    ? _validateDescription = true
+                    : _validateDescription = false;
+                quantityController.text.trim().isEmpty
+                    ? _validateQuantity = true
+                    : _validateQuantity = false;
+                shelflifeController.text.trim().isEmpty
+                    ? _validateShelflife = true
+                    : _validateShelflife = false;
+                locationController.text.trim().isEmpty
+                    ? _validateLocation = true
+                    : _validateLocation = false;
+              });
+
+              if (titleController.text.trim().isNotEmpty &&
+                  descriptionController.text.trim().isNotEmpty &&
+                  quantityController.text.trim().isNotEmpty &&
+                  shelflifeController.text.trim().isNotEmpty &&
+                  locationController.text.trim().isNotEmpty) {
+                handleSubmit();
+                isUploading = true;
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Fill all fields!")),
+                );
+              }
+            },
             child: Text(
               "Post",
               style: TextStyle(
@@ -272,6 +314,7 @@ class _UploadState extends State<Upload>
                 controller: titleController,
                 decoration: InputDecoration(
                   hintText: "Enter a title...",
+                  errorText: _validateTitle ? 'Title Can\'t Be Empty' : null,
                   // border: InputBorder.none,
                 ),
               ),
@@ -289,6 +332,9 @@ class _UploadState extends State<Upload>
                 maxLines: 5,
                 decoration: InputDecoration(
                   hintText: "Enter a description...",
+                  errorText: _validateDescription
+                      ? 'Description Can\'t Be Empty'
+                      : null,
                   // border: InputBorder.none,
                 ),
               ),
@@ -305,6 +351,8 @@ class _UploadState extends State<Upload>
                 controller: quantityController,
                 decoration: InputDecoration(
                   hintText: "Enter details about weight and quantity...",
+                  errorText:
+                      _validateQuantity ? 'Quantity Can\'t Be Empty' : null,
                   // border: InputBorder.none,
                 ),
               ),
@@ -321,6 +369,8 @@ class _UploadState extends State<Upload>
                 controller: shelflifeController,
                 decoration: InputDecoration(
                   hintText: "Best time to eat before expiry...",
+                  errorText:
+                      _validateShelflife ? 'Shelf Life Can\'t Be Empty' : null,
                   // border: InputBorder.none,
                 ),
               ),
@@ -340,6 +390,8 @@ class _UploadState extends State<Upload>
                 maxLines: 4,
                 decoration: InputDecoration(
                   hintText: "Where was this photo taken?",
+                  errorText:
+                      _validateLocation ? 'Location Can\'t Be Empty' : null,
                   border: InputBorder.none,
                 ),
               ),
@@ -372,6 +424,10 @@ class _UploadState extends State<Upload>
   getUserLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      lat = position.latitude;
+      long = position.longitude;
+    });
     List<Placemark> placemarks = await GeocodingPlatform.instance
         .placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark placemark = placemarks[0];

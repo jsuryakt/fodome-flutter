@@ -16,8 +16,11 @@ class _TimelineState extends State<Timeline>
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
 
+  // var timeDate;
+
   @override
   void initState() {
+    // print(timelineRef);
     super.initState();
   }
 
@@ -154,10 +157,15 @@ class _TimelineState extends State<Timeline>
                           VerticalDivider(
                             indent: 10.0,
                           ),
-                          Text(
-                            "Posted by " + doc['displayName'],
-                            style: TextStyle(
-                                fontSize: 15.0, color: Colors.grey[600]),
+                          ListTile(
+                            leading: Text(
+                              "Posted by " + doc['displayName'],
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Colors.grey[600]),
+                            ),
+                            // trailing: Text(doc['timestamp'] +
+                            //     " ".substring(
+                            //         0, doc['timestamp'] + " ".length - 9)),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
