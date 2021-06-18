@@ -92,13 +92,17 @@ class _LocationState extends State<Location> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context, [sublocality, locality, district, state]);
-          },
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
-        ),
+        leading: _clickedOnLocation
+            ? IconButton(
+                onPressed: () {
+                  Navigator.pop(
+                      context, [sublocality, locality, district, state]);
+                },
+                icon: Icon(Icons.arrow_back_ios_new_rounded),
+              )
+            : Text(""),
         title: Text("Get current location"),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),

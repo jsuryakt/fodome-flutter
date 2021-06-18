@@ -12,7 +12,7 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline> {
-  List shortAddrs = ["", "", "", ""];
+  List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
 
   @override
@@ -23,26 +23,32 @@ class _TimelineState extends State<Timeline> {
   Text address(List shortAddrs) {
     var text = "";
     int flag = 0;
-    int lenghtOfArr = shortAddrs.length;
-    if (shortAddrs[lenghtOfArr - 1] != null) {
-      for (int idx = 0; idx < lenghtOfArr - 1; idx++) {
-        if (shortAddrs[idx].length > 2 && shortAddrs[idx + 1].length > 2) {
-          text = shortAddrs[idx] + ",\n" + shortAddrs[idx + 1];
-          if (idx <= 1) {
-            flag = 1;
+    try {
+      var lengthOfArr = shortAddrs.length;
+      // print("HELLOOOO");
+      // print(lengthOfArr);
+      if (shortAddrs[lengthOfArr - 1] != null) {
+        for (int idx = 0; idx < lengthOfArr - 1; idx++) {
+          if (shortAddrs[idx].length > 2 && shortAddrs[idx + 1].length > 2) {
+            text = shortAddrs[idx] + ",\n" + shortAddrs[idx + 1];
+            if (idx <= 1) {
+              flag = 1;
+            }
+            break;
           }
-          break;
         }
       }
-    }
-    if (flag == 0) {
-      if (shortAddrs[0].length > 2 && shortAddrs[2].length > 2) {
-        text = shortAddrs[0] + ",\n" + shortAddrs[2];
-      } else if (shortAddrs[0].length > 2 && shortAddrs[3].length > 2) {
-        text = shortAddrs[0] + ",\n" + shortAddrs[3];
-      } else if (shortAddrs[1].length > 2 && shortAddrs[3].length > 2) {
-        text = shortAddrs[1] + ",\n" + shortAddrs[3];
+      if (flag == 0) {
+        if (shortAddrs[0].length > 2 && shortAddrs[2].length > 2) {
+          text = shortAddrs[0] + ",\n" + shortAddrs[2];
+        } else if (shortAddrs[0].length > 2 && shortAddrs[3].length > 2) {
+          text = shortAddrs[0] + ",\n" + shortAddrs[3];
+        } else if (shortAddrs[1].length > 2 && shortAddrs[3].length > 2) {
+          text = shortAddrs[1] + ",\n" + shortAddrs[3];
+        }
       }
+    } on Exception catch (_) {
+      print('Length Null.. No locaction');
     }
     return Text(
       text,
@@ -61,6 +67,8 @@ class _TimelineState extends State<Timeline> {
         leading: IconButton(
           icon: Icon(Icons.my_location_rounded),
           onPressed: () async {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('Locating...')));
             shortAddrs = await Navigator.push(
                 context, MaterialPageRoute(builder: (context) => Location()));
             setState(() {
