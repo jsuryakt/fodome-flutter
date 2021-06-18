@@ -18,7 +18,8 @@ _linkToOpenInWebView(url) async {
   }
 }
 
-class _DonationState extends State<Donation> {
+class _DonationState extends State<Donation>
+    with AutomaticKeepAliveClientMixin<Donation> {
   Widget buildImageInteractionCard(
           {required String imageURL, required String link}) =>
       Card(
@@ -115,4 +116,7 @@ class _DonationState extends State<Donation> {
           ],
         ),
       );
+
+  @override
+  bool get wantKeepAlive => true;
 }

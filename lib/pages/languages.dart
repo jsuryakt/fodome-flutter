@@ -5,7 +5,8 @@ class LanguagesScreen extends StatefulWidget {
   _LanguagesScreenState createState() => _LanguagesScreenState();
 }
 
-class _LanguagesScreenState extends State<LanguagesScreen> {
+class _LanguagesScreenState extends State<LanguagesScreen>
+    with AutomaticKeepAliveClientMixin<LanguagesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,4 +26,7 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

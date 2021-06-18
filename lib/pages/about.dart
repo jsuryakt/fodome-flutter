@@ -5,11 +5,15 @@ class AboutPage extends StatefulWidget {
   _AboutPageState createState() => _AboutPageState();
 }
 
-class _AboutPageState extends State<AboutPage> {
+class _AboutPageState extends State<AboutPage>
+    with AutomaticKeepAliveClientMixin<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('About')),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

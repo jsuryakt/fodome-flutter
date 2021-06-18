@@ -16,7 +16,8 @@ class Profile extends StatefulWidget {
   }
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileState extends State<Profile>
+    with AutomaticKeepAliveClientMixin<Profile> {
   logout() {
     widget.googleSignIn?.signOut();
   }
@@ -96,4 +97,7 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

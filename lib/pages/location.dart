@@ -8,7 +8,8 @@ class Location extends StatefulWidget {
   _LocationState createState() => _LocationState();
 }
 
-class _LocationState extends State<Location> {
+class _LocationState extends State<Location>
+    with AutomaticKeepAliveClientMixin<Location> {
   var buttonTextStart = "Detect My Location";
   var buttonTextSearch = "Detecting...";
   bool _whichButtonText = false;
@@ -19,8 +20,8 @@ class _LocationState extends State<Location> {
   String? state;
   String? sublocality;
   String? district;
-  var lat = 0.0;
-  var long = 0.0;
+  var lat = 20.593684;
+  var long = 78.96288;
   late LatLng _center = LatLng(lat, long);
 
   void initState() {
@@ -31,17 +32,18 @@ class _LocationState extends State<Location> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    // print(position);
     List<Placemark> placemarks = await GeocodingPlatform.instance
         .placemarkFromCoordinates(position.latitude, position.longitude);
+
     setState(() {
       _center = LatLng(position.latitude, position.longitude);
       lat = position.latitude;
       long = position.longitude;
     });
+
     Placemark placemark = placemarks[0];
-    // print(placemark);
     String completeAddress = "";
+
     if (placemark.subThoroughfare != "") {
       completeAddress = placemark.subThoroughfare! + ", ";
     }
@@ -51,8 +53,10 @@ class _LocationState extends State<Location> {
     if (placemark.name != "" && placemark.name != placemark.street) {
       completeAddress += placemark.name! + ", ";
     }
+
     completeAddress +=
         '${placemark.street}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+
     setState(() {
       _whichButtonText = false;
       address = completeAddress;
@@ -62,6 +66,7 @@ class _LocationState extends State<Location> {
       locality = placemark.locality;
       sublocality = placemark.subLocality;
     });
+
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
@@ -70,8 +75,6 @@ class _LocationState extends State<Location> {
         ),
       ),
     );
-    // print(completeAddress);
-    // print(_center);
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -117,6 +120,12 @@ class _LocationState extends State<Location> {
                   target: _center,
                   zoom: 1.0,
                 ),
+                scrollGesturesEnabled: true,
+                tiltGesturesEnabled: true,
+                trafficEnabled: false,
+                indoorViewEnabled: true,
+                compassEnabled: true,
+                rotateGesturesEnabled: true,
               ),
             ),
             SizedBox(height: 20),
@@ -152,4 +161,7 @@ class _LocationState extends State<Location> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
