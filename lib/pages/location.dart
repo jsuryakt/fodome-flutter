@@ -31,7 +31,7 @@ class _LocationState extends State<Location> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    print(position);
+    // print(position);
     List<Placemark> placemarks = await GeocodingPlatform.instance
         .placemarkFromCoordinates(position.latitude, position.longitude);
     setState(() {
@@ -40,7 +40,7 @@ class _LocationState extends State<Location> {
       long = position.longitude;
     });
     Placemark placemark = placemarks[0];
-    print(placemark);
+    // print(placemark);
     String completeAddress = "";
     if (placemark.subThoroughfare != "") {
       completeAddress = placemark.subThoroughfare! + ", ";
@@ -70,8 +70,8 @@ class _LocationState extends State<Location> {
         ),
       ),
     );
-    print(completeAddress);
-    print(_center);
+    // print(completeAddress);
+    // print(_center);
   }
 
   void _onMapCreated(GoogleMapController controller) {
