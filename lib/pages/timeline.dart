@@ -18,6 +18,9 @@ class _TimelineState extends State<Timeline>
   String userPhoto = user!.photoUrl.toString();
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
+  String allPostText = "Showing all posts...";
+  bool _locCheck = false;
+  String text = "Enable Location";
 
   @override
   void initState() {
@@ -52,6 +55,9 @@ class _TimelineState extends State<Timeline>
     } on Exception catch (_) {
       print('Length Null.. No locaction');
     }
+    setState(() {
+      this.text = text;
+    });
     return text;
   }
 
@@ -60,6 +66,7 @@ class _TimelineState extends State<Timeline>
         context, MaterialPageRoute(builder: (context) => Location()));
     setState(() {
       this.shortAddrs = shortAddrs;
+      this._locCheck = true;
     });
   }
 
@@ -68,7 +75,7 @@ class _TimelineState extends State<Timeline>
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(60.0), // here the desired height
+          preferredSize: Size.fromHeight(65.0), // here the desired height
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             margin: const EdgeInsets.only(top: 10.0),
@@ -85,7 +92,7 @@ class _TimelineState extends State<Timeline>
               title: Padding(
                 padding: const EdgeInsets.only(top: 5.0),
                 child: Text(
-                  address(shortAddrs),
+                  _locCheck ? address(shortAddrs) : text,
                   style: TextStyle(
                     shadows: [
                       Shadow(
@@ -95,7 +102,7 @@ class _TimelineState extends State<Timeline>
                     ],
                     color: Colors.transparent,
                     fontFamily: "Hind",
-                    fontSize: 20.0,
+                    fontSize: 16.0,
                     decorationColor: Colors.grey.shade400,
                     decoration: TextDecoration.underline,
                     decorationStyle: TextDecorationStyle.dashed,
@@ -150,7 +157,11 @@ class _TimelineState extends State<Timeline>
                 .map(
                   (doc) => Container(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                        left: 9.0,
+                        right: 9.0,
+                        bottom: 10.0,
+                      ),
                       child: Card(
                         clipBehavior: Clip.antiAlias,
                         shape: RoundedRectangleBorder(
@@ -217,8 +228,29 @@ class _TimelineState extends State<Timeline>
             return Container(
               child: RefreshIndicator(
                 onRefresh: _pullRefresh,
-                child: ListView(
-                  children: children,
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.all(15.0),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          _locCheck ? "Posts near $text" : allPostText,
+                          style: TextStyle(
+                            fontFamily: "Hind",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        children: children,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
