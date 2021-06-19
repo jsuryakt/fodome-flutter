@@ -68,9 +68,10 @@ class _TimelineState extends State<Timeline>
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(56.0), // here the desired height
-          child: Padding(
+          preferredSize: Size.fromHeight(60.0), // here the desired height
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            margin: const EdgeInsets.only(top: 10.0),
             child: AppBar(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
