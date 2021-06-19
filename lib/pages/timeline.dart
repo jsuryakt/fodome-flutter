@@ -69,69 +69,72 @@ class _TimelineState extends State<Timeline>
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(56.0), // here the desired height
-          child: AppBar(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(50),
-                bottomRight: Radius.circular(50),
-                topLeft: Radius.circular(50),
-                topRight: Radius.circular(50),
-              ),
-            ),
-            titleSpacing: 3.0,
-            title: Padding(
-              padding: const EdgeInsets.only(top: 5.0),
-              child: Text(
-                address(shortAddrs),
-                style: TextStyle(
-                  shadows: [
-                    Shadow(
-                      color: Colors.grey.shade100,
-                      offset: Offset(0, -6),
-                    )
-                  ],
-                  color: Colors.transparent,
-                  fontFamily: "Hind",
-                  fontSize: 20.0,
-                  decorationColor: Colors.grey.shade400,
-                  decoration: TextDecoration.underline,
-                  decorationStyle: TextDecorationStyle.dashed,
-                  decorationThickness: 4.0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: AppBar(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(50),
+                  bottomRight: Radius.circular(50),
+                  topLeft: Radius.circular(50),
+                  topRight: Radius.circular(50),
                 ),
               ),
-            ),
-            leading: IconButton(
-              icon: Icon(Icons.my_location_rounded),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: <Widget>[
-                        SizedBox(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3.0,
-                          ),
-                          height: 20.0,
-                          width: 20.0,
-                        ),
-                        Text("   Loading Map...")
-                      ],
-                    ),
+              titleSpacing: 3.0,
+              title: Padding(
+                padding: const EdgeInsets.only(top: 5.0),
+                child: Text(
+                  address(shortAddrs),
+                  style: TextStyle(
+                    shadows: [
+                      Shadow(
+                        color: Colors.grey.shade100,
+                        offset: Offset(0, -6),
+                      )
+                    ],
+                    color: Colors.transparent,
+                    fontFamily: "Hind",
+                    fontSize: 20.0,
+                    decorationColor: Colors.grey.shade400,
+                    decoration: TextDecoration.underline,
+                    decorationStyle: TextDecorationStyle.dashed,
+                    decorationThickness: 4.0,
                   ),
-                );
-                gotoLocationPage();
-              },
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipOval(
-                  child: Image.network(userPhoto),
                 ),
               ),
-            ],
-            // centerTitle: true,
-            backgroundColor: Colors.deepPurple[500],
+              leading: IconButton(
+                icon: Icon(Icons.my_location_rounded),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                            height: 20.0,
+                            width: 20.0,
+                          ),
+                          Text("   Loading Map...")
+                        ],
+                      ),
+                    ),
+                  );
+                  gotoLocationPage();
+                },
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipOval(
+                    child: Image.network(userPhoto),
+                  ),
+                ),
+              ],
+              // centerTitle: true,
+              backgroundColor: Colors.deepPurple[500],
+            ),
           ),
         ),
         backgroundColor: Colors.purple[50],
