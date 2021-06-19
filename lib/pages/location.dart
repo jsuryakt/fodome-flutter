@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -65,6 +67,15 @@ class _LocationState extends State<Location>
       district = placemark.subAdministrativeArea;
       locality = placemark.locality;
       sublocality = placemark.subLocality;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Taking you to home..'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      Timer(Duration(seconds: 3), () {
+        Navigator.pop(context, [sublocality, locality, district, state]);
+      });
     });
 
     mapController.animateCamera(

@@ -74,6 +74,15 @@ class _CreateAccountState extends State<CreateAccount> {
                     padding: EdgeInsets.all(16.0),
                     child: Container(
                       child: TextFormField(
+                        validator: (val) {
+                          if (val!.trim().length < 3 || val.isEmpty) {
+                            return "Username too short";
+                          } else if (val.trim().length > 12) {
+                            return "Username too long";
+                          } else {
+                            return null;
+                          }
+                        },
                         onSaved: (val) => username = val!,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -88,6 +97,17 @@ class _CreateAccountState extends State<CreateAccount> {
                     padding: EdgeInsets.all(16.0),
                     child: Container(
                       child: TextFormField(
+                        validator: (val) {
+                          String patttern = r'(^[0-9]{10}$)';
+                          RegExp regExp = new RegExp(patttern);
+                          if (val!.trim().length != 10 || val.isEmpty) {
+                            return "Please Enter 10 digit phone number without STD code";
+                          } else if (!regExp.hasMatch(val)) {
+                            return "Alphanumeric detected, Please Enter 10 digit phone number only";
+                          } else {
+                            return null;
+                          }
+                        },
                         onSaved: (val) => phone = val!,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
