@@ -3,8 +3,10 @@ import 'package:fodome/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
+GoogleSignInAccount? user = googleSignIn.currentUser;
 
 class Timeline extends StatefulWidget {
   @override
@@ -13,26 +15,24 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline>
     with AutomaticKeepAliveClientMixin<Timeline> {
+  String userPhoto = user!.photoUrl.toString();
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
 
-  // var timeDate;
-
   @override
   void initState() {
-    // print(timelineRef);
     super.initState();
   }
 
-  Text address(List shortAddrs) {
-    var text = "";
+  String address(List shortAddrs) {
+    var text = "Enable Location";
     int flag = 0;
     try {
       var lengthOfArr = shortAddrs.length;
       if (shortAddrs[lengthOfArr - 1] != null) {
         for (int idx = 0; idx < lengthOfArr - 1; idx++) {
           if (shortAddrs[idx].length > 2 && shortAddrs[idx + 1].length > 2) {
-            text = shortAddrs[idx] + ",\n" + shortAddrs[idx + 1];
+            text = shortAddrs[idx] + ", " + shortAddrs[idx + 1];
             if (idx <= 1) {
               flag = 1;
             }
@@ -42,24 +42,17 @@ class _TimelineState extends State<Timeline>
       }
       if (flag == 0) {
         if (shortAddrs[0].length > 2 && shortAddrs[2].length > 2) {
-          text = shortAddrs[0] + ",\n" + shortAddrs[2];
+          text = shortAddrs[0] + ", " + shortAddrs[2];
         } else if (shortAddrs[0].length > 2 && shortAddrs[3].length > 2) {
-          text = shortAddrs[0] + ",\n" + shortAddrs[3];
+          text = shortAddrs[0] + ", " + shortAddrs[3];
         } else if (shortAddrs[1].length > 2 && shortAddrs[3].length > 2) {
-          text = shortAddrs[1] + ",\n" + shortAddrs[3];
+          text = shortAddrs[1] + ", " + shortAddrs[3];
         }
       }
     } on Exception catch (_) {
       print('Length Null.. No locaction');
     }
-    return Text(
-      text,
-      style: TextStyle(
-        color: Colors.grey[200],
-        fontFamily: "Hind",
-        fontSize: 15.0,
-      ),
-    );
+    return text;
   }
 
   gotoLocationPage() async {
@@ -72,131 +65,161 @@ class _TimelineState extends State<Timeline>
 
   @override
   Widget build(context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.my_location_rounded),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: <Widget>[
-                    SizedBox(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3.0,
-                      ),
-                      height: 20.0,
-                      width: 20.0,
-                    ),
-                    Text("   Loading Map...")
+    return SafeArea(
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(56.0), // here the desired height
+          child: AppBar(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(50),
+                bottomRight: Radius.circular(50),
+                topLeft: Radius.circular(50),
+                topRight: Radius.circular(50),
+              ),
+            ),
+            titleSpacing: 3.0,
+            title: Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Text(
+                address(shortAddrs),
+                style: TextStyle(
+                  shadows: [
+                    Shadow(
+                      color: Colors.grey.shade100,
+                      offset: Offset(0, -6),
+                    )
                   ],
+                  color: Colors.transparent,
+                  fontFamily: "Hind",
+                  fontSize: 20.0,
+                  decorationColor: Colors.grey.shade400,
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.dashed,
+                  decorationThickness: 4.0,
                 ),
               ),
-            );
-            gotoLocationPage();
-          },
-        ),
-        title: Text(
-          "Fodome",
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: "Signatra",
-            fontSize: 55.0,
+            ),
+            leading: IconButton(
+              icon: Icon(Icons.my_location_rounded),
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: <Widget>[
+                        SizedBox(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3.0,
+                          ),
+                          height: 20.0,
+                          width: 20.0,
+                        ),
+                        Text("   Loading Map...")
+                      ],
+                    ),
+                  ),
+                );
+                gotoLocationPage();
+              },
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipOval(
+                  child: Image.network(userPhoto),
+                ),
+              ),
+            ],
+            // centerTitle: true,
+            backgroundColor: Colors.deepPurple[500],
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: Center(child: address(shortAddrs)),
-          )
-        ],
-        centerTitle: true,
-        backgroundColor: Colors.purple,
-      ),
-      backgroundColor: Colors.purple[50],
-      body: StreamBuilder<QuerySnapshot>(
-        stream: timelineRef.orderBy('timestamp', descending: true).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return circularProgress();
-          }
-          List<Widget> children = snapshot.data!.docs
-              .map(
-                (doc) => Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      clipBehavior: Clip.antiAlias,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              doc['title'],
-                              style: TextStyle(fontSize: 25.0),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => () {},
-                            child: Ink.image(
-                              image: NetworkImage(doc['mediaUrl']),
-                              height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              doc['description'],
-                              style: TextStyle(fontSize: 22.0),
-                            ),
-                          ),
-                          VerticalDivider(
-                            indent: 10.0,
-                          ),
-                          ListTile(
-                            leading: Text(
-                              "Posted by " + doc['displayName'],
-                              style: TextStyle(
-                                  fontSize: 15.0, color: Colors.grey[600]),
-                            ),
-                            // trailing: Text(doc['timestamp'] +
-                            //     " ".substring(
-                            //         0, doc['timestamp'] + " ".length - 9)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              leading: Icon(
-                                Icons.pin_drop,
-                                color: Colors.green,
-                                size: 35.0,
-                              ),
-                              title: Text(
-                                doc['location'],
-                                style: TextStyle(fontSize: 15.0),
+        backgroundColor: Colors.purple[50],
+        body: StreamBuilder<QuerySnapshot>(
+          stream:
+              timelineRef.orderBy('timestamp', descending: true).snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return circularProgress();
+            }
+            List<Widget> children = snapshot.data!.docs
+                .map(
+                  (doc) => Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                doc['title'],
+                                style: TextStyle(fontSize: 25.0),
                               ),
                             ),
-                          ),
-                        ],
+                            TextButton(
+                              onPressed: () => () {},
+                              child: Ink.image(
+                                image: NetworkImage(doc['mediaUrl']),
+                                height: 200,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                doc['description'],
+                                style: TextStyle(fontSize: 22.0),
+                              ),
+                            ),
+                            VerticalDivider(
+                              indent: 10.0,
+                            ),
+                            ListTile(
+                              leading: Text(
+                                "Posted by " + doc['displayName'],
+                                style: TextStyle(
+                                    fontSize: 15.0, color: Colors.grey[600]),
+                              ),
+                              // trailing: Text(doc['timestamp'] +
+                              //     " ".substring(
+                              //         0, doc['timestamp'] + " ".length - 9)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.pin_drop,
+                                  color: Colors.green,
+                                  size: 35.0,
+                                ),
+                                title: Text(
+                                  doc['location'],
+                                  style: TextStyle(fontSize: 15.0),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+                )
+                .toList();
+            return Container(
+              child: RefreshIndicator(
+                onRefresh: _pullRefresh,
+                child: ListView(
+                  children: children,
                 ),
-              )
-              .toList();
-          return Container(
-            child: RefreshIndicator(
-              onRefresh: _pullRefresh,
-              child: ListView(
-                children: children,
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

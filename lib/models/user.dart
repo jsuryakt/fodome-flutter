@@ -7,7 +7,6 @@ class User {
   final String? photoUrl;
   final String? displayName;
   final String? bio;
-  // final String? timestamp;
 
   User({
     this.id,
@@ -16,7 +15,6 @@ class User {
     this.photoUrl,
     this.displayName,
     this.bio,
-    // this.timestamp,
   });
 
   factory User.fromDocument(DocumentSnapshot doc) {
@@ -27,7 +25,6 @@ class User {
       photoUrl: doc['photoUrl'],
       displayName: doc['displayName'],
       bio: doc['bio'],
-      // timestamp: doc['timestamp'],
     );
   }
 }
