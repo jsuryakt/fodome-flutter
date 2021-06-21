@@ -76,6 +76,8 @@ class _HomeState extends State<Home> {
     // For handling notification when the app is in background
     // but not terminate
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print(
+          'Message title: ${message.notification?.title}, body: ${message.notification?.body}, data: ${message.data}');
       PushNotification notification = PushNotification(
         title: message.notification?.title,
         body: message.notification?.body,
@@ -172,8 +174,8 @@ class _HomeState extends State<Home> {
             Text(_notificationInfo!.title!),
             subtitle: Text(_notificationInfo!.body!),
             background: Colors.cyan.shade700,
-            duration: Duration(seconds: 2),
-            autoDismiss: false,
+            duration: Duration(seconds: 5),
+            // autoDismiss: false,
           );
         }
       });
