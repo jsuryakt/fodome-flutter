@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fodome/models/notification.dart';
 import 'package:fodome/models/user.dart';
-// import 'package:fodome/pages/activity_feed.dart';
 import 'package:fodome/pages/donation.dart';
 import 'package:fodome/pages/timeline.dart';
 import 'package:fodome/pages/upload.dart';
@@ -10,6 +12,7 @@ import 'package:fodome/pages/profile.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fodome/pages/create_account.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:overlay_support/overlay_support.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = FirebaseFirestore.instance.collection('users');
@@ -19,19 +22,43 @@ final postsRef = FirebaseFirestore.instance.collection('posts');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
 User? currentUser;
 
+Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+}
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  late final FirebaseMessaging _messaging;
+  PushNotification? _notificationInfo;
+
   bool isAuth = false;
   PageController? pageController;
   int pageIndex = 0;
 
+  checkForInitialMessage() async {
+    await Firebase.initializeApp();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      PushNotification notification = PushNotification(
+        title: initialMessage.notification?.title,
+        body: initialMessage.notification?.body,
+      );
+      setState(() {
+        _notificationInfo = notification;
+      });
+    }
+  }
+
   @override
   void initState() {
-    super.initState();
+    registerNotification();
+    checkForInitialMessage();
     pageController = PageController();
     // Detects when user signed in
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
@@ -45,6 +72,23 @@ class _HomeState extends State<Home> {
     }).catchError((err) {
       print('Error signing in: $err');
     });
+
+    // For handling notification when the app is in background
+    // but not terminate
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      PushNotification notification = PushNotification(
+        title: message.notification?.title,
+        body: message.notification?.body,
+        dataTitle: message.data['title'],
+        dataBody: message.data['body'],
+      );
+
+      setState(() {
+        _notificationInfo = notification;
+      });
+    });
+
+    super.initState();
   }
 
   handleSignIn(GoogleSignInAccount? account) {
@@ -91,6 +135,53 @@ class _HomeState extends State<Home> {
     currentUser = User.fromDocument(doc);
   }
 
+  void registerNotification() async {
+    // 1. Initialize the Firebase app
+    await Firebase.initializeApp();
+
+    // 2. Instantiate Firebase Messaging
+    _messaging = FirebaseMessaging.instance;
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    // 3. On iOS, this helps to take the user permissions
+    NotificationSettings settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+      // For handling the received notifications
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        // Parse the message received
+        PushNotification notification = PushNotification(
+          title: message.notification?.title,
+          body: message.notification?.body,
+        );
+
+        setState(() {
+          _notificationInfo = notification;
+        });
+
+        if (_notificationInfo != null) {
+          // For displaying the notification as an overlay
+          showSimpleNotification(
+            Text(_notificationInfo!.title!),
+            subtitle: Text(_notificationInfo!.body!),
+            background: Colors.cyan.shade700,
+            duration: Duration(seconds: 2),
+            autoDismiss: false,
+          );
+        }
+      });
+    } else {
+      print('User declined or has not accepted permission');
+    }
+  }
+
   @override
   void dispose() {
     pageController?.dispose();
@@ -100,10 +191,6 @@ class _HomeState extends State<Home> {
   login() {
     googleSignIn.signIn();
   }
-
-  // logout() {
-  //   googleSignIn.signOut();
-  // }
 
   onPageChanged(int pageIndex) {
     setState(() {
