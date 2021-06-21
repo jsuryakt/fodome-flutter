@@ -61,7 +61,6 @@ class _ProfileState extends State<Profile>
                   },
                 ),
                 SettingsTile(title: 'Theme', leading: Icon(Icons.brush)),
-                // SettingsTile(title: 'Payments', leading: Icon(Icons.payment)),
               ],
             ),
             SettingsSection(
