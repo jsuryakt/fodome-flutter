@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fodome/pages/home.dart';
@@ -17,6 +19,7 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline>
     with AutomaticKeepAliveClientMixin<Timeline> {
+  final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   String userPhoto = user!.photoUrl.toString();
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
@@ -178,10 +181,23 @@ class _TimelineState extends State<Timeline>
                 children: children.length == 0
                     ? <Widget>[
                         Container(
-                          margin: EdgeInsets.only(top: 100.0),
+                          margin: EdgeInsets.only(top: 90.0),
                           child: SvgPicture.asset(
                               'assets/images/no_content.svg',
                               height: 260.0),
+                        ),
+                        Divider(
+                          indent: 10.0,
+                        ),
+                        Center(
+                          child: Text(
+                            "Oops! No Posts here",
+                            style: TextStyle(
+                              fontFamily: "Hind",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25.0,
+                            ),
+                          ),
                         ),
                       ]
                     : children,
@@ -343,7 +359,14 @@ class _TimelineState extends State<Timeline>
     );
   }
 
+  showSnack() {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Posts updated!")),
+    );
+  }
+
   Future<void> _pullRefresh() async {
+    showSnack();
     print("Refresh");
   }
 
