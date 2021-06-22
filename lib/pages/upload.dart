@@ -386,10 +386,12 @@ class _UploadState extends State<Upload>
             title: Container(
               width: 250.0,
               child: TextField(
+                enabled: false,
                 controller: locationController,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText: "Where was this photo taken?",
+                  hintText:
+                      "Where was this photo taken?\nClick below to get Location",
                   errorText:
                       _validateLocation ? 'Location Can\'t Be Empty' : null,
                   border: InputBorder.none,

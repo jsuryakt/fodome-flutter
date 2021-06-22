@@ -3,6 +3,7 @@ import 'package:fodome/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
@@ -21,6 +22,7 @@ class _TimelineState extends State<Timeline>
   String allPostText = "Showing all posts...";
   bool _locCheck = false;
   String text = "Enable Location";
+  double currLat = 0.0, currLong = 0.0;
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _TimelineState extends State<Timeline>
     var text = "Enable Location";
     int flag = 0;
     try {
-      var lengthOfArr = shortAddrs.length;
+      var lengthOfArr = 4; //sublocality, locality, district, state
       if (shortAddrs[lengthOfArr - 1] != null) {
         for (int idx = 0; idx < lengthOfArr - 1; idx++) {
           if (shortAddrs[idx].length > 2 && shortAddrs[idx + 1].length > 2) {
@@ -67,11 +69,185 @@ class _TimelineState extends State<Timeline>
     setState(() {
       this.shortAddrs = shortAddrs;
       this._locCheck = true;
+      this.currLat = shortAddrs[4];
+      this.currLong = shortAddrs[5];
     });
+  }
+
+  Widget posts(snapshot) {
+    var timelinePosts;
+    if (snapshot is List<Map<String, dynamic>>) {
+      timelinePosts = snapshot;
+    } else {
+      timelinePosts = snapshot.data!.docs;
+    }
+    List<Widget> children = timelinePosts
+        .map<Widget>(
+          (doc) => Container(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 9.0,
+                right: 9.0,
+                bottom: 10.0,
+              ),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        doc['title'],
+                        style: TextStyle(fontSize: 25.0),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => () {},
+                      child: Ink.image(
+                        image: NetworkImage(doc['mediaUrl']),
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        doc['description'],
+                        style: TextStyle(fontSize: 22.0),
+                      ),
+                    ),
+                    VerticalDivider(
+                      indent: 10.0,
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Posted by " + doc['displayName'],
+                        style:
+                            TextStyle(fontSize: 15.0, color: Colors.grey[600]),
+                      ),
+                      // trailing: Text(doc['timestamp']
+                      //     .substring(0, doc['timestamp'].length - 9)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.pin_drop,
+                          color: Colors.green,
+                          size: 35.0,
+                        ),
+                        title: Text(
+                          doc['location'],
+                          style: TextStyle(fontSize: 15.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        )
+        .toList();
+    return Container(
+      child: RefreshIndicator(
+        onRefresh: _pullRefresh,
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.all(15.0),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  _locCheck ? "Posts near $text" : allPostText,
+                  style: TextStyle(
+                    fontFamily: "Hind",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25.0,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: children,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildTimeline(snapshot) {
+    if (!snapshot.hasData) {
+      return circularProgress();
+    }
+
+    if (_locCheck) {
+      //Show loc specofic
+      List<Map<String, dynamic>> lstOfPosts = [];
+      snapshot.data!.docs.forEach((DocumentSnapshot doc) {
+        Map<String, dynamic> locSpecific = new Map<String, dynamic>();
+        // to get posts other than posted by the same user
+        // if (user!.id != doc['ownerId']) {
+        var distance = (GeolocatorPlatform.instance.distanceBetween(
+                  currLat,
+                  currLong,
+                  doc['latitude'],
+                  doc['longitude'],
+                ) /
+                1000) //dividing by 1000 to get kms because distanceBetween() returns in mtrs
+            .round();
+        String loc = doc['location'];
+        print("Distance between $text and $loc is $distance");
+        if (distance < 20) {
+          locSpecific['ownerId'] = doc['ownerId'];
+          locSpecific['displayName'] = doc['displayName'];
+          locSpecific['isVerified'] = doc['isVerified'];
+          locSpecific['latitude'] = doc['latitude'];
+          locSpecific['longitude'] = doc['longitude'];
+          locSpecific['location'] = doc['location'];
+          locSpecific['mediaUrl'] = doc['mediaUrl'];
+          locSpecific['postId'] = doc['postId'];
+          locSpecific['quantity'] = doc['quantity'];
+          locSpecific['shelfLife'] = doc['shelfLife'];
+          locSpecific['timestamp'] = doc['timestamp'];
+          locSpecific['title'] = doc['title'];
+          locSpecific['username'] = doc['username'];
+          locSpecific['description'] = doc['description'];
+
+          lstOfPosts.add(locSpecific);
+        }
+        // print("Showing only these posts: ");
+        // print(lstOfPosts);
+        // print(doc['location']);
+        // }
+      });
+      var len = lstOfPosts.length;
+      print("Showing only $len posts: ");
+      print(lstOfPosts);
+
+      return posts(lstOfPosts);
+    } else {
+      //Show all posts
+      return posts(snapshot);
+    }
   }
 
   @override
   Widget build(context) {
+    if (_locCheck == true) {
+      print("CURR LAT " +
+          currLat.toString() +
+          "\n" +
+          "CURR LONG " +
+          currLong.toString());
+    }
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
@@ -150,110 +326,7 @@ class _TimelineState extends State<Timeline>
           stream:
               timelineRef.orderBy('timestamp', descending: true).snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return circularProgress();
-            }
-            List<Widget> children = snapshot.data!.docs
-                .map(
-                  (doc) => Container(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 9.0,
-                        right: 9.0,
-                        bottom: 10.0,
-                      ),
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                doc['title'],
-                                style: TextStyle(fontSize: 25.0),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () => () {},
-                              child: Ink.image(
-                                image: NetworkImage(doc['mediaUrl']),
-                                height: 200,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                doc['description'],
-                                style: TextStyle(fontSize: 22.0),
-                              ),
-                            ),
-                            VerticalDivider(
-                              indent: 10.0,
-                            ),
-                            ListTile(
-                              leading: Text(
-                                "Posted by " + doc['displayName'],
-                                style: TextStyle(
-                                    fontSize: 15.0, color: Colors.grey[600]),
-                              ),
-                              // trailing: Text(doc['timestamp'] +
-                              //     " ".substring(
-                              //         0, doc['timestamp'] + " ".length - 9)),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                leading: Icon(
-                                  Icons.pin_drop,
-                                  color: Colors.green,
-                                  size: 35.0,
-                                ),
-                                title: Text(
-                                  doc['location'],
-                                  style: TextStyle(fontSize: 15.0),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-                .toList();
-            return Container(
-              child: RefreshIndicator(
-                onRefresh: _pullRefresh,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.all(15.0),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          _locCheck ? "Posts near $text" : allPostText,
-                          style: TextStyle(
-                            fontFamily: "Hind",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView(
-                        children: children,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return buildTimeline(snapshot);
           },
         ),
       ),

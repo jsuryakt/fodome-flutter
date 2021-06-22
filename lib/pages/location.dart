@@ -24,7 +24,6 @@ class _LocationState extends State<Location>
   String? district;
   var lat = 20.593684;
   var long = 78.96288;
-  late LatLng _center = LatLng(lat, long);
 
   void initState() {
     super.initState();
@@ -38,7 +37,6 @@ class _LocationState extends State<Location>
         .placemarkFromCoordinates(position.latitude, position.longitude);
 
     setState(() {
-      _center = LatLng(position.latitude, position.longitude);
       lat = position.latitude;
       long = position.longitude;
     });
@@ -74,7 +72,8 @@ class _LocationState extends State<Location>
         ),
       );
       Timer(Duration(seconds: 3), () {
-        Navigator.pop(context, [sublocality, locality, district, state]);
+        Navigator.pop(
+            context, [sublocality, locality, district, state, lat, long]);
       });
     });
 
@@ -109,8 +108,8 @@ class _LocationState extends State<Location>
         leading: _clickedOnLocation
             ? IconButton(
                 onPressed: () {
-                  Navigator.pop(
-                      context, [sublocality, locality, district, state]);
+                  Navigator.pop(context,
+                      [sublocality, locality, district, state, lat, long]);
                 },
                 icon: Icon(Icons.arrow_back_ios_new_rounded),
               )
@@ -128,7 +127,7 @@ class _LocationState extends State<Location>
                 markers: _createMarker(),
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
-                  target: _center,
+                  target: LatLng(lat, long),
                   zoom: 1.0,
                 ),
                 scrollGesturesEnabled: true,
