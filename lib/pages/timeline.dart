@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:fodome/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
@@ -174,7 +175,16 @@ class _TimelineState extends State<Timeline>
             ),
             Expanded(
               child: ListView(
-                children: children,
+                children: children.length == 0
+                    ? <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(top: 100.0),
+                          child: SvgPicture.asset(
+                              'assets/images/no_content.svg',
+                              height: 260.0),
+                        ),
+                      ]
+                    : children,
               ),
             ),
           ],
