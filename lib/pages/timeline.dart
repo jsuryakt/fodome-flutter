@@ -83,7 +83,7 @@ class _TimelineState extends State<Timeline>
 
   //To select a custom range using slider
   Widget selectCustomRange() {
-    double min = 1, max = 500;
+    double min = 1, max = 1000;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
@@ -299,7 +299,7 @@ class _TimelineState extends State<Timeline>
                 children: children.length == 0
                     ? <Widget>[
                         Container(
-                          margin: EdgeInsets.only(top: 90.0),
+                          margin: EdgeInsets.only(top: 50.0),
                           child: SvgPicture.asset(
                               'assets/images/no_content.svg',
                               height: 260.0),
