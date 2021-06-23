@@ -124,7 +124,9 @@ class _LocationState extends State<Location>
             Container(
               height: 300.0,
               child: GoogleMap(
+                mapType: MapType.normal,
                 markers: _createMarker(),
+                // liteModeEnabled: true,
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
                   target: LatLng(lat, long),

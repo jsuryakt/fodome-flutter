@@ -27,6 +27,9 @@ class _TimelineState extends State<Timeline>
   bool _locCheck = false;
   String text = "Enable Location";
   double currLat = 0.0, currLong = 0.0;
+  double range = 20;
+  bool _showCustomBar = false;
+  bool _isSnackbarActive = false;
 
   @override
   void initState() {
@@ -78,10 +81,78 @@ class _TimelineState extends State<Timeline>
     });
   }
 
+  //To select a custom range using slider
+  Widget selectCustomRange() {
+    double min = 1, max = 500;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "${min.toInt()}",
+            style: TextStyle(
+              fontFamily: "Hind",
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
+          Expanded(
+            child: Slider(
+              min: min,
+              max: max,
+              value: this.range,
+              label: "${range.round().toString()}",
+              onChanged: (double value) {
+                setState(() {
+                  range = value.roundToDouble();
+                });
+              },
+            ),
+          ),
+          Text(
+            "${max.toInt()}",
+            style: TextStyle(
+              fontFamily: "Hind",
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //Sets the range to value specified and returns a button
+  rangeButton(setRange) {
+    return MaterialButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      height: 35.0,
+      minWidth: 30.0,
+      color: Theme.of(context).primaryColor,
+      textColor: Colors.white,
+      onPressed: () {
+        if (!_isSnackbarActive) {
+          showSnack();
+        }
+        // showSnack();
+        setState(() {
+          this.range = setRange;
+        });
+      },
+      child: Text('${setRange.toInt()}'),
+      splashColor: Colors.purple[50],
+    );
+  }
+
   Widget posts(snapshot) {
     var timelinePosts;
+    var noOfPosts;
     if (snapshot is List<Map<String, dynamic>>) {
       timelinePosts = snapshot;
+      noOfPosts = timelinePosts.length;
     } else {
       timelinePosts = snapshot.data!.docs;
     }
@@ -163,7 +234,7 @@ class _TimelineState extends State<Timeline>
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.all(15.0),
+              margin: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -176,8 +247,55 @@ class _TimelineState extends State<Timeline>
                 ),
               ),
             ),
+            //If location is enabled then show range options
+            _locCheck
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          "Range (km):",
+                          style: TextStyle(
+                            fontFamily: "Hind",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        rangeButton(10.0),
+                        rangeButton(20.0),
+                        rangeButton(50.0),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _showCustomBar = !_showCustomBar;
+                            });
+                          },
+                          child: const Text('Custom'),
+                        ),
+                      ],
+                    ),
+                  )
+                : Text(""),
+            //If custom is checked then show the bar.
+            _showCustomBar ? selectCustomRange() : Container(),
+            //If location is enabled then show no of posts under that location
+            _locCheck
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      "Showing $noOfPosts posts under ${range.toInt()} kms",
+                      style: TextStyle(
+                        fontFamily: "Hind",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  )
+                : Text(""),
             Expanded(
               child: ListView(
+                //if no posts show no post image and no post text
                 children: children.length == 0
                     ? <Widget>[
                         Container(
@@ -201,6 +319,7 @@ class _TimelineState extends State<Timeline>
                         ),
                       ]
                     : children,
+                // else show posts
               ),
             ),
           ],
@@ -210,6 +329,7 @@ class _TimelineState extends State<Timeline>
   }
 
   Widget buildTimeline(snapshot) {
+    print("RANGE " + range.toString());
     if (!snapshot.hasData) {
       return circularProgress();
     }
@@ -230,8 +350,8 @@ class _TimelineState extends State<Timeline>
                 1000) //dividing by 1000 to get kms because distanceBetween() returns in mtrs
             .round();
         String loc = doc['location'];
-        print("Distance between $text and $loc is $distance");
-        if (distance < 20) {
+        // print("Distance between $text and $loc is $distance");
+        if (distance < range) {
           locSpecific['ownerId'] = doc['ownerId'];
           locSpecific['displayName'] = doc['displayName'];
           locSpecific['isVerified'] = doc['isVerified'];
@@ -254,9 +374,9 @@ class _TimelineState extends State<Timeline>
         // print(doc['location']);
         // }
       });
-      var len = lstOfPosts.length;
-      print("Showing only $len posts: ");
-      print(lstOfPosts);
+      // var len = lstOfPosts.length;
+      // print("Showing only $len posts: ");
+      // print(lstOfPosts);
 
       return posts(lstOfPosts);
     } else {
@@ -360,9 +480,18 @@ class _TimelineState extends State<Timeline>
   }
 
   showSnack() {
-    return ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Posts updated!")),
-    );
+    setState(() {
+      _isSnackbarActive = true;
+    });
+    return ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Posts updated!")))
+        .closed
+        .then((SnackBarClosedReason reason) {
+      // snackbar is now closed.
+      setState(() {
+        _isSnackbarActive = false;
+      });
+    });
   }
 
   Future<void> _pullRefresh() async {
