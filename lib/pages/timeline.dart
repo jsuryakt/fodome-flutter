@@ -294,16 +294,14 @@ class _TimelineState extends State<Timeline>
                   )
                 : Text(""),
             Expanded(
-              child: ListView(
-                //if no posts show no post image and no post text
-                children: children.length == 0
-                    ? <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(top: 50.0),
-                          child: SvgPicture.asset(
-                              'assets/images/no_content.svg',
-                              height: 260.0),
-                        ),
+              //If there are no posts then show no post image and text
+              child: children.length == 0
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset('assets/images/no_content.svg',
+                            height: 260.0),
                         Divider(
                           indent: 10.0,
                         ),
@@ -317,10 +315,12 @@ class _TimelineState extends State<Timeline>
                             ),
                           ),
                         ),
-                      ]
-                    : children,
-                // else show posts
-              ),
+                      ],
+                    )
+                  // else show posts
+                  : ListView(
+                      children: children,
+                    ),
             ),
           ],
         ),
@@ -495,7 +495,9 @@ class _TimelineState extends State<Timeline>
   }
 
   Future<void> _pullRefresh() async {
-    showSnack();
+    if (!_isSnackbarActive) {
+      showSnack();
+    }
     print("Refresh");
   }
 
