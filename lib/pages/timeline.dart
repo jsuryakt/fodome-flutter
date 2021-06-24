@@ -27,6 +27,7 @@ class _TimelineState extends State<Timeline>
   double range = 20;
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
+  String userPhoto = currentUser!.photoUrl.toString();
 
   @override
   void initState() {
@@ -326,7 +327,7 @@ class _TimelineState extends State<Timeline>
   }
 
   Widget buildTimeline(snapshot) {
-    print("RANGE " + range.toString());
+    // print("RANGE " + range.toString());
     if (!snapshot.hasData) {
       return circularProgress();
     }
@@ -346,7 +347,7 @@ class _TimelineState extends State<Timeline>
                 ) /
                 1000) //dividing by 1000 to get kms because distanceBetween() returns in mtrs
             .round();
-        String loc = doc['location'];
+        // String loc = doc['location'];
         // print("Distance between $text and $loc is $distance");
         if (distance < range) {
           locSpecific['ownerId'] = doc['ownerId'];
@@ -384,13 +385,16 @@ class _TimelineState extends State<Timeline>
 
   @override
   Widget build(context) {
-    if (_locCheck == true) {
-      print("CURR LAT " +
-          currLat.toString() +
-          "\n" +
-          "CURR LONG " +
-          currLong.toString());
-    }
+    // if (_locCheck == true) {
+    //   print("CURR LAT " +
+    //       currLat.toString() +
+    //       "\n" +
+    //       "CURR LONG " +
+    //       currLong.toString());
+    // }
+    // if (currentUser == null) {
+    //   return circularProgress();
+    // }
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
@@ -454,9 +458,13 @@ class _TimelineState extends State<Timeline>
               actions: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ClipOval(
-                    child: Image.network(currentUser!.photoUrl.toString()),
-                  ),
+                  child: currentUser != null
+                      ? ClipOval(
+                          child: Image.network(userPhoto),
+                        )
+                      : ClipOval(
+                          child: Image.asset("assets/images/blank_photo.png"),
+                        ),
                 ),
               ],
               // centerTitle: true,
