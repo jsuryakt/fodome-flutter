@@ -36,8 +36,8 @@ class _HomeState extends State<Home> {
   PushNotification? _notificationInfo;
 
   bool isAuth = false;
-  PageController? pageController;
-  int pageIndex = 0;
+  PageController? pageController = PageController();
+  int activeIndex = 0;
 
   checkForInitialMessage() async {
     await Firebase.initializeApp();
@@ -59,7 +59,6 @@ class _HomeState extends State<Home> {
   void initState() {
     registerNotification();
     checkForInitialMessage();
-    pageController = PageController();
     // Detects when user signed in
     googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       handleSignIn(account);
@@ -93,9 +92,9 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  handleSignIn(GoogleSignInAccount? account) {
+  handleSignIn(GoogleSignInAccount? account) async {
     if (account != null) {
-      createUserInFirestore();
+      await createUserInFirestore();
       setState(() {
         isAuth = true;
       });
@@ -108,7 +107,7 @@ class _HomeState extends State<Home> {
 
   createUserInFirestore() async {
     // 1) check if user exists in users collection in database (according to their id)
-    final GoogleSignInAccount? user = googleSignIn.currentUser;
+    GoogleSignInAccount? user = googleSignIn.currentUser;
     DocumentSnapshot doc = await usersRef.doc(user!.id).get();
 
     if (!doc.exists) {
@@ -194,18 +193,12 @@ class _HomeState extends State<Home> {
     googleSignIn.signIn();
   }
 
-  onPageChanged(int pageIndex) {
-    setState(() {
-      this.pageIndex = pageIndex;
-    });
-  }
-
   onTap(int pageIndex) {
-    pageController?.animateToPage(
-      pageIndex,
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    setState(() {
+      activeIndex = pageIndex;
+      pageController!.animateToPage(pageIndex,
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    });
   }
 
   Scaffold buildAuthScreen() {
@@ -218,11 +211,15 @@ class _HomeState extends State<Home> {
           Profile(googleSignIn),
         ],
         controller: pageController,
-        onPageChanged: onPageChanged,
+        onPageChanged: (page) {
+          setState(() {
+            activeIndex = page;
+          });
+        },
         // physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: CupertinoTabBar(
-          currentIndex: pageIndex,
+          currentIndex: activeIndex,
           onTap: onTap,
           activeColor: Colors.purple,
           items: [
@@ -270,7 +267,7 @@ class _HomeState extends State<Home> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  pageIndex = 0;
+                  activeIndex = 0;
                 });
                 login();
               },
