@@ -27,7 +27,7 @@ class _TimelineState extends State<Timeline>
   double range = 20;
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
-  String userPhoto = currentUser!.photoUrl.toString();
+  // String userPhoto = currentUser!.photoUrl.toString();
 
   @override
   void initState() {
@@ -385,6 +385,12 @@ class _TimelineState extends State<Timeline>
 
   @override
   Widget build(context) {
+    String? userPhoto;
+
+    if (currentUser != null) {
+      userPhoto = currentUser!.photoUrl.toString();
+    }
+
     // if (_locCheck == true) {
     //   print("CURR LAT " +
     //       currLat.toString() +
@@ -458,7 +464,7 @@ class _TimelineState extends State<Timeline>
               actions: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: currentUser != null
+                  child: userPhoto != null
                       ? ClipOval(
                           child: Image.network(userPhoto),
                         )

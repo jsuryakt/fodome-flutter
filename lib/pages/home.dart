@@ -92,9 +92,9 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  handleSignIn(GoogleSignInAccount? account) async {
+  handleSignIn(GoogleSignInAccount? account) {
     if (account != null) {
-      await createUserInFirestore();
+      createUserInFirestore();
       setState(() {
         isAuth = true;
       });
