@@ -213,13 +213,13 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           Timeline(),
-          Upload(currentUser: currentUser),
+          Upload(),
           Donation(),
           Profile(googleSignIn),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
-        physics: NeverScrollableScrollPhysics(),
+        // physics: NeverScrollableScrollPhysics(),
       ),
       bottomNavigationBar: CupertinoTabBar(
           currentIndex: pageIndex,
@@ -268,7 +268,12 @@ class _HomeState extends State<Home> {
               ),
             ),
             GestureDetector(
-              onTap: login,
+              onTap: () {
+                setState(() {
+                  pageIndex = 0;
+                });
+                login();
+              },
               child: Container(
                 width: 260.0,
                 height: 60.0,

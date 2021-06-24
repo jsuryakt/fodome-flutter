@@ -1,7 +1,3 @@
-import 'package:fodome/models/user.dart';
-// ignore: unused_import
-import 'package:fodome/widgets/header.dart';
-
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:fodome/pages/home.dart';
@@ -15,8 +11,6 @@ import 'package:image/image.dart' as Im;
 import 'package:uuid/uuid.dart';
 import 'package:geocoding/geocoding.dart';
 
-// import 'package:cached_network_image/cached_network_image.dart';
-
 final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.deepOrange,
   shape: RoundedRectangleBorder(
@@ -29,9 +23,6 @@ firebase_storage.FirebaseStorage storage =
 final ImagePicker _picker = ImagePicker();
 
 class Upload extends StatefulWidget {
-  final User? currentUser;
-
-  Upload({this.currentUser});
   @override
   _UploadState createState() => _UploadState();
 }
@@ -44,7 +35,6 @@ class _UploadState extends State<Upload>
   TextEditingController shelflifeController = TextEditingController();
   TextEditingController locationController = TextEditingController();
 
-  // final _text = TextEditingController();
   bool _validateTitle = false;
   bool _validateDescription = false;
   bool _validateQuantity = false;

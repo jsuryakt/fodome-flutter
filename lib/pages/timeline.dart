@@ -7,10 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
-GoogleSignInAccount? user = googleSignIn.currentUser;
 
 class Timeline extends StatefulWidget {
   @override
@@ -20,7 +18,6 @@ class Timeline extends StatefulWidget {
 class _TimelineState extends State<Timeline>
     with AutomaticKeepAliveClientMixin<Timeline> {
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
-  String userPhoto = user!.photoUrl.toString();
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
   String allPostText = "Showing all posts...";
@@ -458,7 +455,7 @@ class _TimelineState extends State<Timeline>
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ClipOval(
-                    child: Image.network(userPhoto),
+                    child: Image.network(currentUser!.photoUrl.toString()),
                   ),
                 ),
               ],
