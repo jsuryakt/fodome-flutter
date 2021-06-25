@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 
@@ -177,6 +178,13 @@ class _TimelineState extends State<Timeline>
                         style: TextStyle(fontSize: 25.0),
                       ),
                     ),
+                    _locCheck
+                        ? Text(
+                            doc['distance'] + "kms away.",
+                            style: TextStyle(
+                                fontSize: 15.0, color: Colors.grey[600]),
+                          )
+                        : Text(""),
                     TextButton(
                       onPressed: () => () {},
                       child: Ink.image(
@@ -201,8 +209,14 @@ class _TimelineState extends State<Timeline>
                         style:
                             TextStyle(fontSize: 15.0, color: Colors.grey[600]),
                       ),
-                      // trailing: Text(doc['timestamp']
-                      //     .substring(0, doc['timestamp'].length - 9)),
+                      trailing: Text(
+                        (DateFormat.yMMMd()
+                                .add_jm()
+                                .format(doc['timestamp'].toDate()))
+                            .toString(),
+                        style:
+                            TextStyle(fontSize: 15.0, color: Colors.grey[600]),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -340,13 +354,13 @@ class _TimelineState extends State<Timeline>
         // to get posts other than posted by the same user
         // if (user!.id != doc['ownerId']) {
         var distance = (GeolocatorPlatform.instance.distanceBetween(
-                  currLat,
-                  currLong,
-                  doc['latitude'],
-                  doc['longitude'],
-                ) /
-                1000) //dividing by 1000 to get kms because distanceBetween() returns in mtrs
-            .round();
+              currLat,
+              currLong,
+              doc['latitude'],
+              doc['longitude'],
+            ) /
+            1000); //dividing by 1000 to get kms because distanceBetween() returns in mtrs
+
         // String loc = doc['location'];
         // print("Distance between $text and $loc is $distance");
         if (distance < range) {
@@ -364,6 +378,7 @@ class _TimelineState extends State<Timeline>
           locSpecific['title'] = doc['title'];
           locSpecific['username'] = doc['username'];
           locSpecific['description'] = doc['description'];
+          locSpecific['distance'] = distance.toStringAsFixed(1);
 
           lstOfPosts.add(locSpecific);
         }

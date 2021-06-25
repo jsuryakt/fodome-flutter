@@ -69,7 +69,7 @@ class _HomeState extends State<Home> {
     googleSignIn.signInSilently(suppressErrors: false).then((account) {
       handleSignIn(account);
     }).catchError((err) {
-      print('Error signing in: $err');
+      print('Error signing in silently: $err');
     });
 
     // For handling notification when the app is in background
@@ -92,9 +92,9 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-  handleSignIn(GoogleSignInAccount? account) {
+  handleSignIn(GoogleSignInAccount? account) async {
     if (account != null) {
-      createUserInFirestore();
+      await createUserInFirestore();
       setState(() {
         isAuth = true;
       });
