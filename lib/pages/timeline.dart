@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fodome/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fodome/pages/post_screen.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
 import 'package:geolocator/geolocator.dart';
@@ -185,10 +187,15 @@ class _TimelineState extends State<Timeline>
                                 fontSize: 15.0, color: Colors.grey[600]),
                           )
                         : Text(""),
-                    TextButton(
-                      onPressed: () => () {},
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) => PostScreen(
+                                  doc: doc,
+                                )));
+                      },
                       child: Ink.image(
-                        image: NetworkImage(doc['mediaUrl']),
+                        image: CachedNetworkImageProvider(doc['mediaUrl']),
                         height: 200,
                         fit: BoxFit.cover,
                       ),
