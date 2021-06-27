@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fodome/pages/home.dart';
@@ -73,7 +74,7 @@ class _TimelineState extends State<Timeline>
 
   gotoLocationPage() async {
     shortAddrs = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Location()));
+        context, CupertinoPageRoute(builder: (context) => Location()));
     setState(() {
       this.shortAddrs = shortAddrs;
       this._locCheck = true;
@@ -159,87 +160,115 @@ class _TimelineState extends State<Timeline>
     }
     List<Widget> children = timelinePosts
         .map<Widget>(
-          (doc) => Container(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 9.0,
-                right: 9.0,
-                bottom: 10.0,
-              ),
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+          (doc) => InkWell(
+            onTap: () {
+              Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (BuildContext context) => PostScreen(
+                        doc: doc,
+                      )));
+            },
+            child: Container(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 9.0,
+                  right: 9.0,
+                  bottom: 10.0,
                 ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        doc['title'],
-                        style: TextStyle(fontSize: 25.0),
+                child: Card(
+                  clipBehavior: Clip.antiAlias,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: CachedNetworkImage(
+                              imageUrl: doc['mediaUrl'],
+                              height: 200,
+                              width: 400,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              placeholder: (context, url) => Center(
+                                child: SizedBox(
+                                  width: 40.0,
+                                  height: 40.0,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (_locCheck)
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                padding: EdgeInsets.all(5.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.teal,
+                                  shape: BoxShape.rectangle,
+                                ),
+                                child: Text(
+                                  doc['distance'] + " kms away",
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontFamily: "Spotify",
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                    ),
-                    _locCheck
-                        ? Text(
-                            doc['distance'] + "kms away.",
-                            style: TextStyle(
-                                fontSize: 15.0, color: Colors.grey[600]),
-                          )
-                        : Text(""),
-                    InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (BuildContext context) => PostScreen(
-                                  doc: doc,
-                                )));
-                      },
-                      child: Ink.image(
-                        image: CachedNetworkImageProvider(doc['mediaUrl']),
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        doc['description'],
-                        style: TextStyle(fontSize: 22.0),
-                      ),
-                    ),
-                    VerticalDivider(
-                      indent: 10.0,
-                    ),
-                    ListTile(
-                      leading: Text(
-                        "Posted by " + doc['displayName'],
-                        style:
-                            TextStyle(fontSize: 15.0, color: Colors.grey[600]),
-                      ),
-                      trailing: Text(
-                        (DateFormat.yMMMd()
-                                .add_jm()
-                                .format(doc['timestamp'].toDate()))
-                            .toString(),
-                        style:
-                            TextStyle(fontSize: 15.0, color: Colors.grey[600]),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.pin_drop,
-                          color: Colors.green,
-                          size: 35.0,
-                        ),
-                        title: Text(
-                          doc['location'],
-                          style: TextStyle(fontSize: 15.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          doc['title'],
+                          style: TextStyle(
+                            fontSize: 25.0,
+                            fontFamily: "Spotify",
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
+                        leading: Text(
+                          "Posted by " + doc['displayName'],
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Text(
+                          (DateFormat.yMMMd().add_jm().format(
+                                doc['timestamp'].toDate(),
+                              )).toString(),
+                          style: TextStyle(
+                            fontSize: 15.0,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.location_pin,
+                            color: Colors.teal,
+                            size: 35.0,
+                          ),
+                          title: Text(
+                            doc['location'],
+                            style: TextStyle(fontSize: 15.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -253,7 +282,8 @@ class _TimelineState extends State<Timeline>
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0),
+              margin: EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15.0, bottom: 10.0),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -267,51 +297,49 @@ class _TimelineState extends State<Timeline>
               ),
             ),
             //If location is enabled then show range options
-            _locCheck
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          "Range (km):",
-                          style: TextStyle(
-                            fontFamily: "Hind",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                        rangeButton(10.0),
-                        rangeButton(20.0),
-                        rangeButton(50.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _showCustomBar = !_showCustomBar;
-                            });
-                          },
-                          child: const Text('Custom'),
-                        ),
-                      ],
-                    ),
-                  )
-                : Text(""),
-            //If custom is checked then show the bar.
-            _showCustomBar ? selectCustomRange() : Container(),
-            //If location is enabled then show no of posts under that location
-            _locCheck
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      "Showing $noOfPosts posts under ${range.toInt()} kms",
+            if (_locCheck)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      "Range (km):",
                       style: TextStyle(
                         fontFamily: "Hind",
                         fontWeight: FontWeight.bold,
-                        fontSize: 15.0,
+                        fontSize: 20.0,
                       ),
                     ),
-                  )
-                : Text(""),
+                    rangeButton(10.0),
+                    rangeButton(20.0),
+                    rangeButton(50.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showCustomBar = !_showCustomBar;
+                        });
+                      },
+                      child: const Text('Custom'),
+                    ),
+                  ],
+                ),
+              ),
+            //If custom is checked then show the bar.
+            if (_showCustomBar) selectCustomRange(),
+            //If location is enabled then show no of posts under that location
+            if (_locCheck)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  "Showing $noOfPosts posts under ${range.toInt()} kms",
+                  style: TextStyle(
+                    fontFamily: "Hind",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15.0,
+                  ),
+                ),
+              ),
             Expanded(
               //If there are no posts then show no post image and text
               child: children.length == 0
@@ -413,20 +441,11 @@ class _TimelineState extends State<Timeline>
       userPhoto = currentUser!.photoUrl.toString();
     }
 
-    // if (_locCheck == true) {
-    //   print("CURR LAT " +
-    //       currLat.toString() +
-    //       "\n" +
-    //       "CURR LONG " +
-    //       currLong.toString());
-    // }
-    // if (currentUser == null) {
-    //   return circularProgress();
-    // }
     return SafeArea(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(65.0), // here the desired height
+          preferredSize:
+              Size.fromHeight(65.0), // here the desired height for appBar
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             margin: const EdgeInsets.only(top: 10.0),
@@ -488,7 +507,15 @@ class _TimelineState extends State<Timeline>
                   padding: const EdgeInsets.all(8.0),
                   child: userPhoto != null
                       ? ClipOval(
-                          child: Image.network(userPhoto),
+                          child: CachedNetworkImage(
+                            imageUrl: userPhoto,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ),
                         )
                       : ClipOval(
                           child: Image.asset("assets/images/blank_photo.png"),

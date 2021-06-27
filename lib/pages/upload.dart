@@ -423,8 +423,14 @@ class _UploadState extends State<Upload>
     List<Placemark> placemarks = await GeocodingPlatform.instance
         .placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark placemark = placemarks[0];
-    String completeAddress =
-        '${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+    // String completeAddress =
+    //     '${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
+    String completeAddress = address([
+      placemark.subLocality,
+      placemark.locality,
+      placemark.subAdministrativeArea,
+      placemark.administrativeArea
+    ]);
     print(completeAddress);
     locationController.text = completeAddress;
   }
@@ -435,5 +441,38 @@ class _UploadState extends State<Upload>
   Widget build(BuildContext context) {
     super.build(context);
     return file == null ? buildSplashScreen() : buildUploadForm();
+  }
+
+  String address(List list) {
+    late var text;
+    int flag = 0;
+    try {
+      var lengthOfArr = 4; //sublocality, locality, district, state
+      if (list[lengthOfArr - 1] != null) {
+        for (int idx = 0; idx < lengthOfArr - 1; idx++) {
+          if (list[idx].length > 2 && list[idx + 1].length > 2) {
+            text = list[idx] + ", " + list[idx + 1];
+            if (idx <= 1) {
+              flag = 1;
+            }
+            break;
+          }
+        }
+      }
+      if (flag == 0) {
+        if (list[0].length > 2 && list[2].length > 2) {
+          text = list[0] + ", " + list[2];
+        } else if (list[0].length > 2 && list[3].length > 2) {
+          text = list[0] + ", " + list[3];
+        } else if (list[1].length > 2 && list[3].length > 2) {
+          text = list[1] + ", " + list[3];
+        }
+      } else {
+        text += ", " + list[3];
+      }
+    } on Exception catch (_) {
+      print('Length Null.. No locaction');
+    }
+    return text;
   }
 }
