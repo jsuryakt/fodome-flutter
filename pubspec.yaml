@@ -71,6 +71,11 @@ flutter:
     - family: Signatra
       fonts:
         - asset: assets/fonts/Signatra.ttf
+    - family: Spotify
+      fonts:
+        - asset: assets/fonts/Spotify/medium.ttf
+        - asset: assets/fonts/Spotify/bold.otf
+          weight: 700
   assets:
     - assets/images/
     

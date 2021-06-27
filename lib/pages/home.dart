@@ -113,7 +113,7 @@ class _HomeState extends State<Home> {
     if (!doc.exists) {
       // 2) if the user doesn't exist, then we want to take them to the create account page
       List getDetails = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+          context, CupertinoPageRoute(builder: (context) => CreateAccount()));
       var username = "", name = "", phone = "";
       if (getDetails != []) {
         username = getDetails[0];
@@ -224,17 +224,21 @@ class _HomeState extends State<Home> {
           activeColor: Colors.purple,
           items: [
             BottomNavigationBarItem(
+              label: "Home",
               icon: Icon(Icons.home_rounded),
             ),
             BottomNavigationBarItem(
+              label: "Post",
               icon: Icon(Icons.add_box_rounded),
             ),
             BottomNavigationBarItem(
+              label: "Donate",
               icon: Icon(
                 Icons.volunteer_activism_rounded,
               ),
             ),
             BottomNavigationBarItem(
+              label: "Settings",
               icon: Icon(Icons.account_circle_rounded),
             ),
           ]),

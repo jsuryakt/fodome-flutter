@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fodome/pages/about.dart';
 import 'package:fodome/widgets/header.dart';
@@ -56,7 +57,7 @@ class _ProfileState extends State<Profile>
                   subtitle: 'English',
                   leading: Icon(Icons.language),
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
+                    Navigator.of(context).push(CupertinoPageRoute(
                         builder: (BuildContext context) => LanguagesScreen()));
                   },
                 ),
@@ -85,7 +86,7 @@ class _ProfileState extends State<Profile>
                   title: 'About',
                   leading: Icon(Icons.perm_device_information),
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
+                    Navigator.of(context).push(CupertinoPageRoute(
                         builder: (BuildContext context) => AboutPage()));
                   },
                 ),
