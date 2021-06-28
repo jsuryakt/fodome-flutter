@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +11,10 @@ import 'package:fodome/pages/post_screen.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 
@@ -149,6 +153,30 @@ class _TimelineState extends State<Timeline>
     );
   }
 
+  Text distance(String distanceText) {
+    return Text(
+      distanceText,
+      maxLines: 1,
+      style: TextStyle(
+        fontSize: 15.0,
+        fontFamily: "Spotify",
+        color: Colors.white,
+      ),
+    );
+  }
+
+  String getSharableText(doc) {
+    String title = doc['title'];
+    String description = doc['description'];
+    String displayName = doc['displayName'];
+    String dateTime = DateFormat.yMMMd()
+        .add_jm()
+        .format(doc['timestamp'].toDate())
+        .toString();
+    String location = doc['location'];
+    return "Check out this food posted by $displayName\n\n\"$title\"\n\nDescription: $description\n\nPosted On: $dateTime\n\nLocation: $location \n\nCheck out more details at fodome.app";
+  }
+
   Widget posts(snapshot) {
     var timelinePosts;
     var noOfPosts;
@@ -168,107 +196,169 @@ class _TimelineState extends State<Timeline>
                       )));
             },
             child: Container(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 9.0,
-                  right: 9.0,
-                  bottom: 10.0,
+              margin: EdgeInsets.only(
+                left: 9.0,
+                right: 9.0,
+                bottom: 15.0,
+              ),
+              child: Card(
+                elevation: 3.0,
+                shadowColor: Colors.grey[300],
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Card(
-                  clipBehavior: Clip.antiAlias,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: CachedNetworkImage(
-                              imageUrl: doc['mediaUrl'],
-                              height: 200,
-                              width: 400,
-                              fit: BoxFit.cover,
-                              errorWidget: (context, url, error) =>
-                                  Icon(Icons.error),
-                              placeholder: (context, url) => Center(
-                                child: SizedBox(
-                                  width: 40.0,
-                                  height: 40.0,
-                                  child: CircularProgressIndicator(),
-                                ),
+                child: Column(
+                  children: [
+                    Stack(
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: CachedNetworkImage(
+                            imageUrl: doc['mediaUrl'],
+                            height: 175,
+                            width: 400,
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            placeholder: (context, url) => Center(
+                              child: SizedBox(
+                                width: 40.0,
+                                height: 40.0,
+                                child: CircularProgressIndicator(),
                               ),
                             ),
                           ),
-                          if (_locCheck)
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Container(
-                                padding: EdgeInsets.all(5.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.teal,
-                                  shape: BoxShape.rectangle,
+                        ),
+                        Positioned(
+                          right: 0.0,
+                          bottom: 8.0,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              final RenderBox box =
+                                  context.findRenderObject() as RenderBox;
+                              if (Platform.isAndroid) {
+                                var url = Uri.parse(doc['mediaUrl']);
+                                var response = await get(url);
+                                final documentDirectory =
+                                    (await getExternalStorageDirectory())!.path;
+                                File imgFile =
+                                    new File('$documentDirectory/flutter.png');
+                                imgFile.writeAsBytesSync(response.bodyBytes);
+                                await Share.shareFiles(
+                                  ['$documentDirectory/flutter.png'],
+                                  // subject: doc['title'],
+                                  text: getSharableText(doc),
+                                );
+                              } else {
+                                await Share.share(getSharableText(doc),
+                                    // subject: doc['description'],
+                                    sharePositionOrigin:
+                                        box.localToGlobal(Offset.zero) &
+                                            box.size);
+                              }
+                            },
+                            child:
+                                Icon(Icons.share_rounded, color: Colors.white),
+                            style: ElevatedButton.styleFrom(
+                              shape: CircleBorder(),
+                              padding: EdgeInsets.all(8),
+                              primary: Colors.teal, // <-- Button color
+                            ),
+                          ),
+                        ),
+                        if (_locCheck)
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                              padding: EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
                                 ),
-                                child: Text(
-                                  doc['distance'] + " kms away",
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    fontSize: 15.0,
-                                    fontFamily: "Spotify",
-                                    color: Colors.white,
-                                  ),
+                                color: Colors.teal,
+                                shape: BoxShape.rectangle,
+                              ),
+                              child: doc['distance'] == "0.0"
+                                  ? distance("Post is in this location")
+                                  : distance(doc['distance'] + " kms away"),
+                            ),
+                          ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 10.0),
+                      child: Text(
+                        doc['title'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 25.0,
+                          fontFamily: "Spotify",
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 5.0, right: 10),
+                              child: Text(
+                                "Posted by " + doc['displayName'],
+                                style: TextStyle(
+                                  fontSize: 15.0,
+                                  color: Colors.grey[600],
                                 ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(right: 8.0, left: 5.0),
+                            child: Text(
+                              (DateFormat.yMMMd().add_jm().format(
+                                    doc['timestamp'].toDate(),
+                                  )).toString(),
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          doc['title'],
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontFamily: "Spotify",
-                            fontWeight: FontWeight.w700,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          right: 8.0, left: 5.0, bottom: 8.0),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Icon(
+                              Icons.location_pin,
+                              color: Colors.teal,
+                              size: 25.0,
+                            ),
                           ),
-                        ),
+                          Expanded(
+                            child: Text(
+                              doc['location'],
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                          ),
+                        ],
                       ),
-                      ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
-                        leading: Text(
-                          "Posted by " + doc['displayName'],
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        trailing: Text(
-                          (DateFormat.yMMMd().add_jm().format(
-                                doc['timestamp'].toDate(),
-                              )).toString(),
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.location_pin,
-                            color: Colors.teal,
-                            size: 35.0,
-                          ),
-                          title: Text(
-                            doc['location'],
-                            style: TextStyle(fontSize: 15.0),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
