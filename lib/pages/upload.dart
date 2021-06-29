@@ -48,6 +48,9 @@ class _UploadState extends State<Upload>
   String postId = Uuid().v4();
   var image;
 
+  bool _isSnackbarActive = false;
+  final ScrollController _scrollController = ScrollController();
+
   handleTakePhoto() async {
     Navigator.pop(context);
     PickedFile? file = await _picker.getImage(
@@ -75,6 +78,16 @@ class _UploadState extends State<Upload>
   }
 
   selectImage(parentContext) {
+    setState(() {
+      // file = null;
+      isUploading = false;
+      locationController.clear();
+      titleController.clear();
+      descriptionController.clear();
+      quantityController.clear();
+      shelflifeController.clear();
+      // postId = Uuid().v4();
+    });
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -133,7 +146,7 @@ class _UploadState extends State<Upload>
     final path = tempDir.path;
     Im.Image? imageFile = Im.decodeImage(image.readAsBytesSync());
     final compressedImageFile = File('$path/img_$postId.jpg')
-      ..writeAsBytesSync(Im.encodeJpg(imageFile!, quality: 85));
+      ..writeAsBytesSync(Im.encodeJpg(imageFile!, quality: 50));
     setState(() {
       image = compressedImageFile;
     });
@@ -191,6 +204,22 @@ class _UploadState extends State<Upload>
   }
 
   handleSubmit() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: <Widget>[
+            SizedBox(
+              child: CircularProgressIndicator(
+                strokeWidth: 3.0,
+              ),
+              height: 20.0,
+              width: 20.0,
+            ),
+            Text("   Uploading...")
+          ],
+        ),
+      ),
+    );
     compressImage();
     String mediaUrl = await uploadImage(image);
     createPostInFirestore(
@@ -201,17 +230,66 @@ class _UploadState extends State<Upload>
       quantity: quantityController.text,
       shelfLife: shelflifeController.text,
     );
-    locationController.clear();
-    titleController.clear();
-    descriptionController.clear();
-    quantityController.clear();
-    shelflifeController.clear();
+    // locationController.clear();
+    // titleController.clear();
+    // descriptionController.clear();
+    // quantityController.clear();
+    // shelflifeController.clear();
 
     setState(() {
       file = null;
-      isUploading = false;
       postId = Uuid().v4();
     });
+  }
+
+  handlePost() {
+    setState(() {
+      isUploading = true;
+      titleController.text.trim().isEmpty
+          ? _validateTitle = true
+          : _validateTitle = false;
+      descriptionController.text.trim().isEmpty
+          ? _validateDescription = true
+          : _validateDescription = false;
+      quantityController.text.trim().isEmpty
+          ? _validateQuantity = true
+          : _validateQuantity = false;
+      shelflifeController.text.trim().isEmpty
+          ? _validateShelflife = true
+          : _validateShelflife = false;
+      locationController.text.trim().isEmpty
+          ? _validateLocation = true
+          : _validateLocation = false;
+    });
+
+    if (titleController.text.trim().isNotEmpty &&
+        descriptionController.text.trim().isNotEmpty &&
+        quantityController.text.trim().isNotEmpty &&
+        shelflifeController.text.trim().isNotEmpty &&
+        locationController.text.trim().isNotEmpty) {
+      _scrollController.animateTo(_scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
+      handleSubmit();
+      // isUploading = true;
+    } else {
+      setState(() {
+        isUploading = false;
+      });
+      if (!_isSnackbarActive) {
+        setState(() {
+          _isSnackbarActive = true;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Fill all fields!")))
+            .closed
+            .then((SnackBarClosedReason reason) {
+          // snackbar is now closed.
+          setState(() {
+            _isSnackbarActive = false;
+          });
+        });
+      }
+    }
   }
 
   Scaffold buildUploadForm() {
@@ -228,39 +306,10 @@ class _UploadState extends State<Upload>
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                titleController.text.trim().isEmpty
-                    ? _validateTitle = true
-                    : _validateTitle = false;
-                descriptionController.text.trim().isEmpty
-                    ? _validateDescription = true
-                    : _validateDescription = false;
-                quantityController.text.trim().isEmpty
-                    ? _validateQuantity = true
-                    : _validateQuantity = false;
-                shelflifeController.text.trim().isEmpty
-                    ? _validateShelflife = true
-                    : _validateShelflife = false;
-                locationController.text.trim().isEmpty
-                    ? _validateLocation = true
-                    : _validateLocation = false;
-              });
-
-              if (titleController.text.trim().isNotEmpty &&
-                  descriptionController.text.trim().isNotEmpty &&
-                  quantityController.text.trim().isNotEmpty &&
-                  shelflifeController.text.trim().isNotEmpty &&
-                  locationController.text.trim().isNotEmpty) {
-                handleSubmit();
-                isUploading = true;
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Fill all fields!")),
-                );
-              }
+              isUploading ? null : handlePost();
             },
             child: Text(
-              "Post",
+              isUploading ? "Please Wait" : "Post",
               style: TextStyle(
                 color: Colors.blueAccent,
                 fontWeight: FontWeight.bold,
@@ -271,8 +320,9 @@ class _UploadState extends State<Upload>
         ],
       ),
       body: ListView(
+        controller: _scrollController,
         children: <Widget>[
-          isUploading ? linearProgress() : Text(""),
+          if (isUploading) linearProgress(),
           Container(
             height: 220.0,
             width: MediaQuery.of(context).size.width * 0.8,

@@ -166,15 +166,17 @@ class _TimelineState extends State<Timeline>
   }
 
   String getSharableText(doc) {
-    String title = doc['title'];
-    String description = doc['description'];
-    String displayName = doc['displayName'];
+    String title = doc['title'].toString();
+    String description = doc['description'].toString();
+    String displayName = doc['displayName'].toString();
     String dateTime = DateFormat.yMMMd()
         .add_jm()
         .format(doc['timestamp'].toDate())
         .toString();
-    String location = doc['location'];
-    return "Check out this food posted by $displayName\n\n\"$title\"\n\nDescription: $description\n\nPosted On: $dateTime\n\nLocation: $location \n\nCheck out more details at fodome.app";
+    String location = doc['location'].toString();
+    String shareText =
+        "Check out this food posted by $displayName\n\n\"$title\"\n\nDescription: $description\n\nPosted On: $dateTime\n\nLocation: $location \n\nCheck out more details at fodome.app";
+    return shareText;
   }
 
   Widget posts(snapshot) {
@@ -247,12 +249,14 @@ class _TimelineState extends State<Timeline>
                                 imgFile.writeAsBytesSync(response.bodyBytes);
                                 await Share.shareFiles(
                                   ['$documentDirectory/flutter.png'],
-                                  // subject: doc['title'],
+                                  subject:
+                                      "Sharing this Food Donation Post with you from FODOME App",
                                   text: getSharableText(doc),
                                 );
                               } else {
                                 await Share.share(getSharableText(doc),
-                                    // subject: doc['description'],
+                                    subject:
+                                        "Sharing this Food Donation Post with you from FODOME App",
                                     sharePositionOrigin:
                                         box.localToGlobal(Offset.zero) &
                                             box.size);
