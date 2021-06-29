@@ -255,45 +255,47 @@ class _TimelineState extends State<Timeline>
                                 imageLoadingShimmer(height: 175, width: 400),
                           ),
                         ),
-                        Positioned(
-                          right: 0.0,
-                          bottom: 8.0,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final RenderBox box =
-                                  context.findRenderObject() as RenderBox;
-                              if (Platform.isAndroid) {
-                                var url = Uri.parse(doc['mediaUrl']);
-                                var response = await get(url);
-                                final documentDirectory =
-                                    (await getExternalStorageDirectory())!.path;
-                                File imgFile =
-                                    new File('$documentDirectory/flutter.png');
-                                imgFile.writeAsBytesSync(response.bodyBytes);
-                                await Share.shareFiles(
-                                  ['$documentDirectory/flutter.png'],
-                                  subject:
-                                      "Sharing this Food Donation Post with you from FODOME App",
-                                  text: getSharableText(doc),
-                                );
-                              } else {
-                                await Share.share(getSharableText(doc),
+                        if (!_isLoading)
+                          Positioned(
+                            right: 0.0,
+                            bottom: 8.0,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                final RenderBox box =
+                                    context.findRenderObject() as RenderBox;
+                                if (Platform.isAndroid) {
+                                  var url = Uri.parse(doc['mediaUrl']);
+                                  var response = await get(url);
+                                  final documentDirectory =
+                                      (await getExternalStorageDirectory())!
+                                          .path;
+                                  File imgFile = new File(
+                                      '$documentDirectory/flutter.png');
+                                  imgFile.writeAsBytesSync(response.bodyBytes);
+                                  await Share.shareFiles(
+                                    ['$documentDirectory/flutter.png'],
                                     subject:
                                         "Sharing this Food Donation Post with you from FODOME App",
-                                    sharePositionOrigin:
-                                        box.localToGlobal(Offset.zero) &
-                                            box.size);
-                              }
-                            },
-                            child:
-                                Icon(Icons.share_rounded, color: Colors.white),
-                            style: ElevatedButton.styleFrom(
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(8),
-                              primary: Colors.teal, // <-- Button color
+                                    text: getSharableText(doc),
+                                  );
+                                } else {
+                                  await Share.share(getSharableText(doc),
+                                      subject:
+                                          "Sharing this Food Donation Post with you from FODOME App",
+                                      sharePositionOrigin:
+                                          box.localToGlobal(Offset.zero) &
+                                              box.size);
+                                }
+                              },
+                              child: Icon(Icons.share_rounded,
+                                  color: Colors.white),
+                              style: ElevatedButton.styleFrom(
+                                shape: CircleBorder(),
+                                padding: EdgeInsets.all(8),
+                                primary: Colors.teal, // <-- Button color
+                              ),
                             ),
                           ),
-                        ),
                         if (_locCheck)
                           Align(
                             alignment: Alignment.topRight,
@@ -338,8 +340,8 @@ class _TimelineState extends State<Timeline>
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 5.0, right: 50),
-                                  child: loadingShimmer(height: 20, width: 150),
+                                      left: 5.0, right: 10),
+                                  child: loadingShimmer(height: 20, width: 100),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
