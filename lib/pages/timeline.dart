@@ -15,6 +15,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
+import 'package:shimmer/shimmer.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 
@@ -35,6 +36,7 @@ class _TimelineState extends State<Timeline>
   double range = 20;
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
+  bool _isLoading = true;
   // String userPhoto = currentUser!.photoUrl.toString();
 
   @override
@@ -179,6 +181,32 @@ class _TimelineState extends State<Timeline>
     return shareText;
   }
 
+  Widget imageLoadingShimmer({required double height, required double width}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.0),
+      child: Shimmer.fromColors(
+        period: Duration(milliseconds: 1000),
+        child: Container(
+          height: height,
+          width: width,
+          color: Color(0xFFC2C2C2),
+        ),
+        baseColor: Color(0xFFC2C2C2),
+        highlightColor: Color(0xFFF5F5F5),
+        direction: ShimmerDirection.ltr,
+      ),
+    );
+  }
+
+  Widget loadingShimmer({required double height, required double width}) {
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    return imageLoadingShimmer(height: height, width: width);
+  }
+
   Widget posts(snapshot) {
     var timelinePosts;
     var noOfPosts;
@@ -223,13 +251,8 @@ class _TimelineState extends State<Timeline>
                             fit: BoxFit.cover,
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
-                            placeholder: (context, url) => Center(
-                              child: SizedBox(
-                                width: 40.0,
-                                height: 40.0,
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
+                            placeholder: (context, url) =>
+                                imageLoadingShimmer(height: 175, width: 400),
                           ),
                         ),
                         Positioned(
@@ -294,73 +317,99 @@ class _TimelineState extends State<Timeline>
                     Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 10.0),
-                      child: Text(
-                        doc['title'],
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 25.0,
-                          fontFamily: "Spotify",
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? loadingShimmer(height: 20, width: 300)
+                          : Text(
+                              doc['title'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 25.0,
+                                fontFamily: "Spotify",
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 5.0, right: 10),
-                              child: Text(
-                                "Posted by " + doc['displayName'],
-                                style: TextStyle(
-                                  fontSize: 15.0,
-                                  color: Colors.grey[600],
+                      child: _isLoading
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 5.0, right: 50),
+                                  child: loadingShimmer(height: 20, width: 150),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 10.0, left: 5.0),
+                                  child: loadingShimmer(height: 20, width: 100),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 5.0, right: 10),
+                                    child: _isLoading
+                                        ? loadingShimmer(height: 20, width: 60)
+                                        : Text(
+                                            "Posted by " + doc['displayName'],
+                                            style: TextStyle(
+                                              fontSize: 15.0,
+                                              color: Colors.grey[600],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 8.0, left: 5.0),
+                                  child: Text(
+                                    (DateFormat.yMMMd().add_jm().format(
+                                          doc['timestamp'].toDate(),
+                                        )).toString(),
+                                    style: TextStyle(
+                                      fontSize: 15.0,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(right: 8.0, left: 5.0),
-                            child: Text(
-                              (DateFormat.yMMMd().add_jm().format(
-                                    doc['timestamp'].toDate(),
-                                  )).toString(),
-                              style: TextStyle(
-                                fontSize: 15.0,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
                           right: 8.0, left: 5.0, bottom: 8.0),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Icon(
-                              Icons.location_pin,
-                              color: Colors.teal,
-                              size: 25.0,
+                      child: _isLoading
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5.0, vertical: 8.0),
+                              child: loadingShimmer(height: 20, width: 300),
+                            )
+                          : Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Icon(
+                                    Icons.location_pin,
+                                    color: Colors.teal,
+                                    size: 25.0,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    doc['location'],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 15.0),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              doc['location'],
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 15.0),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),
