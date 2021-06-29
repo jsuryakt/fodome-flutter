@@ -185,14 +185,14 @@ class _TimelineState extends State<Timeline>
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.0),
       child: Shimmer.fromColors(
-        period: Duration(milliseconds: 1000),
+        period: Duration(milliseconds: 700),
         child: Container(
           height: height,
           width: width,
           color: Color(0xFFC2C2C2),
         ),
-        baseColor: Color(0xFFC2C2C2),
-        highlightColor: Color(0xFFF5F5F5),
+        baseColor: Color(0xFFEFEFEF),
+        highlightColor: Color(0xFFD4D4D4),
         direction: ShimmerDirection.ltr,
       ),
     );
@@ -340,7 +340,7 @@ class _TimelineState extends State<Timeline>
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 5.0, right: 10),
+                                      left: 10.0, right: 10),
                                   child: loadingShimmer(height: 20, width: 100),
                                 ),
                                 Padding(
@@ -390,7 +390,7 @@ class _TimelineState extends State<Timeline>
                       child: _isLoading
                           ? Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 5.0, vertical: 8.0),
+                                  horizontal: 10.0, vertical: 8.0),
                               child: loadingShimmer(height: 20, width: 300),
                             )
                           : Row(
@@ -514,6 +514,61 @@ class _TimelineState extends State<Timeline>
                       children: children,
                     ),
             ),
+            // Remove
+            // Container(
+            //   margin: EdgeInsets.only(
+            //     left: 9.0,
+            //     right: 9.0,
+            //     bottom: 15.0,
+            //   ),
+            //   child: Card(
+            //     elevation: 3.0,
+            //     shadowColor: Colors.grey[300],
+            //     clipBehavior: Clip.antiAlias,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Column(
+            //       children: [
+            //         Stack(
+            //           children: <Widget>[
+            //             imageLoadingShimmer(height: 175, width: 400),
+            //           ],
+            //         ),
+            //         Container(
+            //             padding: const EdgeInsets.symmetric(
+            //                 vertical: 8.0, horizontal: 10.0),
+            //             child: loadingShimmer(height: 20, width: 300)),
+            //         Padding(
+            //           padding: const EdgeInsets.all(8.0),
+            //           child: Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               Padding(
+            //                 padding:
+            //                     const EdgeInsets.only(left: 10.0, right: 10),
+            //                 child: loadingShimmer(height: 20, width: 100),
+            //               ),
+            //               Padding(
+            //                 padding:
+            //                     const EdgeInsets.only(right: 10.0, left: 5.0),
+            //                 child: loadingShimmer(height: 20, width: 100),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //         Padding(
+            //             padding: const EdgeInsets.only(
+            //                 right: 8.0, left: 10.0, bottom: 8.0),
+            //             child: Padding(
+            //               padding: EdgeInsets.symmetric(
+            //                   horizontal: 5.0, vertical: 8.0),
+            //               child: loadingShimmer(height: 20, width: 300),
+            //             )),
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
