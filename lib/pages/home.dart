@@ -27,6 +27,7 @@ User? currentUser;
 
 ConnectionStatusSingleton connectionStatus =
     ConnectionStatusSingleton.getInstance();
+late StreamSubscription _connectionChangeStream;
 
 Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
@@ -65,8 +66,10 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    super.initState();
     // Checking Internet Connection
-    connectionStatus.connectionChange.listen(connectionChanged);
+    _connectionChangeStream =
+        connectionStatus.connectionChange.listen(connectionChanged);
 
     print("Inside Init");
     isOffline = !connectionStatus.hasConnection;
@@ -102,8 +105,6 @@ class _HomeState extends State<Home> {
         _notificationInfo = notification;
       });
     });
-
-    super.initState();
   }
 
   void connectionChanged(dynamic hasConnection) {
