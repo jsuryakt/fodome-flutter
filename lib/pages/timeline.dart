@@ -8,7 +8,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fodome/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/pages/post_screen.dart';
-import 'package:fodome/widgets/progress.dart';
 import 'package:fodome/pages/location.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
@@ -106,14 +105,16 @@ class _TimelineState extends State<Timeline>
             ),
           ),
           Expanded(
-            child: Slider(
+            child: CupertinoSlider(
               min: min,
               max: max,
               value: this.range,
-              label: "${range.round().toString()}",
+              // label: "${range.round().toString()}",
               onChanged: (double value) {
                 setState(() {
                   range = value.roundToDouble();
+                  _isLoading = true;
+                  // To call shimmer loading setting this to true
                 });
               },
             ),
@@ -148,6 +149,8 @@ class _TimelineState extends State<Timeline>
         // showSnack();
         setState(() {
           this.range = setRange;
+          _isLoading = true;
+          // To call shimmer loading setting this to true
         });
       },
       child: Text('${setRange.toInt()}'),
@@ -181,7 +184,8 @@ class _TimelineState extends State<Timeline>
     return shareText;
   }
 
-  Widget imageLoadingShimmer({required double height, required double width}) {
+  // creates shimmer container of specified height and width
+  Widget loadingShimmer({required double height, required double width}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8.0),
       child: Shimmer.fromColors(
@@ -198,13 +202,73 @@ class _TimelineState extends State<Timeline>
     );
   }
 
-  Widget loadingShimmer({required double height, required double width}) {
-    Future.delayed(Duration(seconds: 2), () {
+  // To call loading for seconds mentioned after which setState of loading as false
+  showLoading(int seconds) {
+    Future.delayed(Duration(seconds: seconds), () {
       setState(() {
         _isLoading = false;
       });
     });
-    return imageLoadingShimmer(height: height, width: width);
+    return loadingScreenUI();
+  }
+
+  // Shows 3 cards with skeleton shimmer loading
+  Widget loadingScreenUI() {
+    return ListView.builder(
+      itemCount: 3,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: EdgeInsets.only(
+            left: 9.0,
+            right: 9.0,
+            bottom: 15.0,
+            top: 5.0,
+          ),
+          child: Card(
+            elevation: 3.0,
+            shadowColor: Colors.grey[300],
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              children: [
+                loadingShimmer(height: 175, width: 400),
+                Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 10.0),
+                    child: loadingShimmer(height: 20, width: 300)),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10),
+                        child: loadingShimmer(height: 20, width: 100),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10.0, left: 5.0),
+                        child: loadingShimmer(height: 20, width: 100),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      right: 8.0, left: 10.0, bottom: 8.0),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 5.0, vertical: 8.0),
+                    child: loadingShimmer(height: 20, width: 300),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget posts(snapshot) {
@@ -252,7 +316,7 @@ class _TimelineState extends State<Timeline>
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                             placeholder: (context, url) =>
-                                imageLoadingShimmer(height: 175, width: 400),
+                                loadingShimmer(height: 175, width: 400),
                           ),
                         ),
                         if (!_isLoading)
@@ -319,99 +383,73 @@ class _TimelineState extends State<Timeline>
                     Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 8.0, horizontal: 10.0),
-                      child: _isLoading
-                          ? loadingShimmer(height: 20, width: 300)
-                          : Text(
-                              doc['title'],
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 25.0,
-                                fontFamily: "Spotify",
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                      child: Text(
+                        doc['title'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 25.0,
+                          fontFamily: "Spotify",
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: _isLoading
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, right: 10),
-                                  child: loadingShimmer(height: 20, width: 100),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 5.0, right: 10),
+                              child: Text(
+                                "Posted by " + doc['displayName'],
+                                style: TextStyle(
+                                  fontSize: 15.0,
+                                  color: Colors.grey[600],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 10.0, left: 5.0),
-                                  child: loadingShimmer(height: 20, width: 100),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0, right: 10),
-                                    child: _isLoading
-                                        ? loadingShimmer(height: 20, width: 60)
-                                        : Text(
-                                            "Posted by " + doc['displayName'],
-                                            style: TextStyle(
-                                              fontSize: 15.0,
-                                              color: Colors.grey[600],
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 8.0, left: 5.0),
-                                  child: Text(
-                                    (DateFormat.yMMMd().add_jm().format(
-                                          doc['timestamp'].toDate(),
-                                        )).toString(),
-                                    style: TextStyle(
-                                      fontSize: 15.0,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(right: 8.0, left: 5.0),
+                            child: Text(
+                              (DateFormat.yMMMd().add_jm().format(
+                                    doc['timestamp'].toDate(),
+                                  )).toString(),
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
                           right: 8.0, left: 5.0, bottom: 8.0),
-                      child: _isLoading
-                          ? Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 8.0),
-                              child: loadingShimmer(height: 20, width: 300),
-                            )
-                          : Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Icon(
-                                    Icons.location_pin,
-                                    color: Colors.teal,
-                                    size: 25.0,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    doc['location'],
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 15.0),
-                                  ),
-                                ),
-                              ],
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Icon(
+                              Icons.location_pin,
+                              color: Colors.teal,
+                              size: 25.0,
                             ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              doc['location'],
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -510,65 +548,12 @@ class _TimelineState extends State<Timeline>
                       ],
                     )
                   // else show posts
-                  : ListView(
-                      children: children,
-                    ),
+                  : _isLoading
+                      ? showLoading(1)
+                      : ListView(
+                          children: children,
+                        ),
             ),
-            // Remove
-            // Container(
-            //   margin: EdgeInsets.only(
-            //     left: 9.0,
-            //     right: 9.0,
-            //     bottom: 15.0,
-            //   ),
-            //   child: Card(
-            //     elevation: 3.0,
-            //     shadowColor: Colors.grey[300],
-            //     clipBehavior: Clip.antiAlias,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(10),
-            //     ),
-            //     child: Column(
-            //       children: [
-            //         Stack(
-            //           children: <Widget>[
-            //             imageLoadingShimmer(height: 175, width: 400),
-            //           ],
-            //         ),
-            //         Container(
-            //             padding: const EdgeInsets.symmetric(
-            //                 vertical: 8.0, horizontal: 10.0),
-            //             child: loadingShimmer(height: 20, width: 300)),
-            //         Padding(
-            //           padding: const EdgeInsets.all(8.0),
-            //           child: Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Padding(
-            //                 padding:
-            //                     const EdgeInsets.only(left: 10.0, right: 10),
-            //                 child: loadingShimmer(height: 20, width: 100),
-            //               ),
-            //               Padding(
-            //                 padding:
-            //                     const EdgeInsets.only(right: 10.0, left: 5.0),
-            //                 child: loadingShimmer(height: 20, width: 100),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //         Padding(
-            //             padding: const EdgeInsets.only(
-            //                 right: 8.0, left: 10.0, bottom: 8.0),
-            //             child: Padding(
-            //               padding: EdgeInsets.symmetric(
-            //                   horizontal: 5.0, vertical: 8.0),
-            //               child: loadingShimmer(height: 20, width: 300),
-            //             )),
-            //       ],
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -576,9 +561,8 @@ class _TimelineState extends State<Timeline>
   }
 
   Widget buildTimeline(snapshot) {
-    // print("RANGE " + range.toString());
     if (!snapshot.hasData) {
-      return circularProgress();
+      return loadingScreenUI();
     }
 
     if (_locCheck) {
@@ -617,15 +601,8 @@ class _TimelineState extends State<Timeline>
 
           lstOfPosts.add(locSpecific);
         }
-        // print("Showing only these posts: ");
-        // print(lstOfPosts);
-        // print(doc['location']);
-        // }
       });
-      // var len = lstOfPosts.length;
-      // print("Showing only $len posts: ");
-      // print(lstOfPosts);
-
+      // Shows only posts under specific location
       return posts(lstOfPosts);
     } else {
       //Show all posts
@@ -755,6 +732,11 @@ class _TimelineState extends State<Timeline>
   }
 
   Future<void> _pullRefresh() async {
+    // TO show shimmer isLoading must be true
+    setState(() {
+      _isLoading = true;
+    });
+
     if (!_isSnackbarActive) {
       showSnack();
     }
