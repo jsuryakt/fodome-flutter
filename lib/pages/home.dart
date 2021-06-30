@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fodome/models/notification.dart';
 import 'package:fodome/models/user.dart';
+import 'package:fodome/pages/connection.dart';
 import 'package:fodome/pages/donation.dart';
 import 'package:fodome/pages/timeline.dart';
 import 'package:fodome/pages/upload.dart';
@@ -22,6 +25,9 @@ final postsRef = FirebaseFirestore.instance.collection('posts');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
 User? currentUser;
 
+ConnectionStatusSingleton connectionStatus =
+    ConnectionStatusSingleton.getInstance();
+
 Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
@@ -38,6 +44,8 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController? pageController = PageController();
   int activeIndex = 0;
+
+  bool isOffline = false;
 
   checkForInitialMessage() async {
     await Firebase.initializeApp();
@@ -57,6 +65,12 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    // Checking Internet Connection
+    connectionStatus.connectionChange.listen(connectionChanged);
+
+    print("Inside Init");
+    isOffline = !connectionStatus.hasConnection;
+
     registerNotification();
     checkForInitialMessage();
     // Detects when user signed in
@@ -90,6 +104,14 @@ class _HomeState extends State<Home> {
     });
 
     super.initState();
+  }
+
+  void connectionChanged(dynamic hasConnection) {
+    print("Inside connection Changed");
+    print(hasConnection);
+    setState(() {
+      isOffline = !hasConnection;
+    });
   }
 
   handleSignIn(GoogleSignInAccount? account) async {
@@ -202,6 +224,9 @@ class _HomeState extends State<Home> {
   }
 
   Scaffold buildAuthScreen() {
+    if (isOffline) {
+      return noConnection();
+    }
     return Scaffold(
       body: PageView(
         children: <Widget>[
@@ -246,6 +271,9 @@ class _HomeState extends State<Home> {
   }
 
   Scaffold buildNonAuthScreen() {
+    if (isOffline) {
+      return noConnection();
+    }
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -292,8 +320,47 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Scaffold noConnection() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/no_signal.png', height: 600.0),
+          Center(
+            child: Text(
+              "No Internet!",
+              style: TextStyle(
+                fontFamily: "Spotify",
+                fontSize: 20.0,
+                color: Colors.red,
+              ),
+            ),
+          ),
+          Center(
+            child: Text(
+              "Try again",
+              style: TextStyle(
+                fontFamily: "Spotify",
+                fontSize: 26.0,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    connectionChanged(connectionStatus.hasConnection);
+    print("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+    print(isOffline);
+    print("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+    if (isOffline) {
+      return noConnection();
+    }
     return isAuth ? buildAuthScreen() : buildNonAuthScreen();
   }
 }
