@@ -1,6 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fodome/models/user.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:maps_launcher/maps_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'home.dart';
+
+late User postUser;
 
 class PostScreen extends StatelessWidget {
   dynamic doc;
@@ -44,7 +53,7 @@ class PostScreen extends StatelessWidget {
                     FullImage(imageURL: doc['mediaUrl'])));
       },
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(20.0),
         child: CachedNetworkImage(
           imageUrl: photoURL,
           height: 275,
@@ -63,32 +72,129 @@ class PostScreen extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.arrow_back_ios_new_rounded),
+  openMap() {
+    var location = doc['location'].toString();
+    MapsLauncher.launchCoordinates(doc['latitude'], doc['longitude'],
+        'Opening food post location : $location');
+  }
+
+  openPhone() async {
+    var phoneNumber = postUser.phone;
+    var url = "tel:$phoneNumber";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Widget bottomButton(context, icon, String text, function) {
+    return Container(
+      height: 50.0,
+      width: MediaQuery.of(context).size.width * 0.5,
+      child: OutlinedButton(
+        onPressed: () {
+          function();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: Icon(
+                icon,
+              ),
+              // color: Colors.white,),
             ),
-            title: Text("Post Details"),
-            centerTitle: true,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ListView(
-              children: [
-                photo(context, doc['mediaUrl']),
-                title(doc['title']),
-                description(doc['description']),
-              ],
+            Text(
+              text,
+              style: TextStyle(
+                fontFamily: "Spotify",
+                fontSize: 16.0,
+                // color: Colors.white,
+              ),
             ),
-          )),
+          ],
+        ),
+        style: OutlinedButton.styleFrom(
+          shape: BeveledRectangleBorder(),
+          side: BorderSide(width: 0.2, color: Colors.deepPurple),
+          // backgroundColor: Colors.deepPurple,
+        ),
+      ),
     );
   }
+
+  Set<Marker> _createMarker() {
+    return {
+      Marker(
+        markerId: MarkerId("Post Location"),
+        position: LatLng(doc['latitude'], doc['longitude']),
+        infoWindow: InfoWindow(title: 'Food Post Location'),
+      ),
+    };
+  }
+
+  Widget map() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20.0),
+      child: Container(
+        height: 200.0,
+        child: GoogleMap(
+          myLocationButtonEnabled: false,
+          mapType: MapType.normal,
+          markers: _createMarker(),
+          liteModeEnabled: true,
+          initialCameraPosition: CameraPosition(
+            target: LatLng(doc['latitude'], doc['longitude']),
+            zoom: 15.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    getUser(doc);
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back_ios_new_rounded),
+          ),
+          title: Text("Post Details"),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ListView(
+            children: [
+              photo(context, doc['mediaUrl']),
+              title(doc['title']),
+              description(doc['description']),
+              map(),
+            ],
+          ),
+        ),
+        bottomNavigationBar: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            bottomButton(context, Icons.moving_outlined, "Open Map", openMap),
+            bottomButton(context, Icons.phone, "Call Donor", openPhone),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> getUser(doc) async {
+  DocumentSnapshot userDoc = await usersRef.doc(doc['ownerId']).get();
+  postUser = User.fromDocument(userDoc);
 }
 
 class FullImage extends StatelessWidget {

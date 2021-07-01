@@ -98,12 +98,12 @@ class _CreateAccountState extends State<CreateAccount> {
                     child: Container(
                       child: TextFormField(
                         validator: (val) {
-                          String patttern = r'(^[0-9]{10}$)';
+                          String patttern = r'(^[6-9][0-9]{9}$)';
                           RegExp regExp = new RegExp(patttern);
                           if (val!.trim().length != 10 || val.isEmpty) {
                             return "Please Enter 10 digit phone number without STD code";
                           } else if (!regExp.hasMatch(val)) {
-                            return "Alphanumeric detected, Please Enter 10 digit phone number only";
+                            return "Invalid! Please Enter 10 digit Indian phone number only";
                           } else {
                             return null;
                           }

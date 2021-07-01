@@ -55,6 +55,7 @@ dependencies:
   http: ^0.13.3
   shimmer: ^2.0.0
   connectivity: ^3.0.6
+  maps_launcher: ^2.0.0
 
 dev_dependencies:
   flutter_test:
