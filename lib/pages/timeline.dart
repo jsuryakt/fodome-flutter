@@ -138,8 +138,8 @@ class _TimelineState extends State<Timeline>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5.0),
       ),
-      height: 35.0,
-      minWidth: 30.0,
+      height: 30.0,
+      minWidth: 20.0,
       color: Theme.of(context).primaryColor,
       textColor: Colors.white,
       onPressed: () {
@@ -401,10 +401,11 @@ class _TimelineState extends State<Timeline>
                           Expanded(
                             child: Padding(
                               padding:
-                                  const EdgeInsets.only(left: 5.0, right: 10),
+                                  const EdgeInsets.only(left: 5.0, right: 5.0),
                               child: Text(
                                 "Posted by " + doc['displayName'],
                                 style: TextStyle(
+                                  fontFamily: "Spotify",
                                   fontSize: 15.0,
                                   color: Colors.grey[600],
                                 ),
@@ -414,12 +415,13 @@ class _TimelineState extends State<Timeline>
                           ),
                           Padding(
                             padding:
-                                const EdgeInsets.only(right: 8.0, left: 5.0),
+                                const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
-                              (DateFormat.yMMMd().add_jm().format(
-                                    doc['timestamp'].toDate(),
-                                  )).toString(),
+                              (DateFormat.yMMMd().format(
+                                doc['timestamp'].toDate(),
+                              )).toString(),
                               style: TextStyle(
+                                fontFamily: "Spotify",
                                 fontSize: 15.0,
                                 color: Colors.grey[600],
                               ),
@@ -445,7 +447,11 @@ class _TimelineState extends State<Timeline>
                             child: Text(
                               doc['location'],
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 15.0),
+                              style: TextStyle(
+                                fontFamily: "Spotify",
+                                fontSize: 15.0,
+                                color: Colors.grey[800],
+                              ),
                             ),
                           ),
                         ],
@@ -465,15 +471,14 @@ class _TimelineState extends State<Timeline>
           children: [
             Container(
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15.0, bottom: 10.0),
+              margin: EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   _locCheck ? "Posts near $text" : allPostText,
                   style: TextStyle(
-                    fontFamily: "Hind",
-                    fontWeight: FontWeight.bold,
+                    fontFamily: "Spotify",
+                    fontWeight: FontWeight.w700,
                     fontSize: 25.0,
                   ),
                 ),
@@ -482,43 +487,51 @@ class _TimelineState extends State<Timeline>
             //If location is enabled then show range options
             if (_locCheck)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding: const EdgeInsets.only(left: 10.0, right: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       "Range (km):",
                       style: TextStyle(
-                        fontFamily: "Hind",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                        fontFamily: "Spotify",
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15.0,
                       ),
                     ),
                     rangeButton(10.0),
                     rangeButton(20.0),
                     rangeButton(50.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showCustomBar = !_showCustomBar;
-                        });
-                      },
-                      child: const Text('Custom'),
+                    SizedBox(
+                      height: 30.0,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _showCustomBar = !_showCustomBar;
+                          });
+                        },
+                        child: const Text('Custom'),
+                      ),
                     ),
                   ],
                 ),
+              )
+            else
+              SizedBox(
+                height: 5.0,
               ),
+
             //If custom is checked then show the bar.
             if (_showCustomBar) selectCustomRange(),
             //If location is enabled then show no of posts under that location
             if (_locCheck)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding: const EdgeInsets.only(bottom: 5.0),
                 child: Text(
                   "Showing $noOfPosts posts under ${range.toInt()} kms",
                   style: TextStyle(
-                    fontFamily: "Hind",
-                    fontWeight: FontWeight.bold,
+                    fontFamily: "Spotify",
+                    fontWeight: FontWeight.w700,
                     fontSize: 15.0,
                   ),
                 ),
@@ -662,6 +675,7 @@ class _TimelineState extends State<Timeline>
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
+                      duration: Duration(milliseconds: 1500),
                       content: Row(
                         children: <Widget>[
                           SizedBox(
@@ -680,6 +694,22 @@ class _TimelineState extends State<Timeline>
                 },
               ),
               actions: [
+                if (_locCheck)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        print("MAPS Circle incoming");
+                      },
+                      child: ClipOval(
+                        child: Icon(
+                          Icons.mode_standby_rounded,
+                          size: 35.0,
+                          color: Colors.grey[200],
+                        ),
+                      ),
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: userPhoto != null

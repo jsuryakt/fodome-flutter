@@ -130,7 +130,7 @@ class _LocationState extends State<Location>
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
                   target: LatLng(lat, long),
-                  zoom: 1.0,
+                  zoom: 3.5,
                 ),
                 scrollGesturesEnabled: true,
                 tiltGesturesEnabled: true,
@@ -144,7 +144,7 @@ class _LocationState extends State<Location>
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Colors.purple,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 18),
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 shape: StadiumBorder(),
               ),
