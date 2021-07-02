@@ -136,18 +136,58 @@ class PostScreen extends StatelessWidget {
   }
 
   Widget map() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20.0),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.0),
+        child: Container(
+          height: 200.0,
+          child: GoogleMap(
+            myLocationButtonEnabled: false,
+            mapType: MapType.normal,
+            markers: _createMarker(),
+            liteModeEnabled: true,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(doc['latitude'], doc['longitude']),
+              zoom: 15.0,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget dataCard(String text, data) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 200.0,
-        child: GoogleMap(
-          myLocationButtonEnabled: false,
-          mapType: MapType.normal,
-          markers: _createMarker(),
-          liteModeEnabled: true,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(doc['latitude'], doc['longitude']),
-            zoom: 15.0,
+        height: 50.0,
+        width: 100.0,
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                text + " :  ",
+                style: TextStyle(
+                  fontFamily: "Spotify",
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16.0,
+                ),
+              ),
+              Text(
+                data.toString(),
+                style: TextStyle(
+                  fontFamily: "Spotify",
+                  fontSize: 16.0,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -176,6 +216,8 @@ class PostScreen extends StatelessWidget {
               photo(context, doc['mediaUrl']),
               title(doc['title']),
               description(doc['description']),
+              dataCard("Quantity", doc['quantity']),
+              dataCard("Shelf Life", doc['shelfLife']),
               map(),
             ],
           ),
