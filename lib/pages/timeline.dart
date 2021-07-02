@@ -79,7 +79,11 @@ class _TimelineState extends State<Timeline>
 
   gotoLocationPage() async {
     shortAddrs = await Navigator.push(
-        context, CupertinoPageRoute(builder: (context) => Location()));
+      context,
+      CupertinoPageRoute(
+        builder: (context) => Location(),
+      ),
+    );
     setState(() {
       this.shortAddrs = shortAddrs;
       this._locCheck = true;

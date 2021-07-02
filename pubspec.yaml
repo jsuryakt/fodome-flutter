@@ -81,6 +81,8 @@ flutter:
         - asset: assets/fonts/Spotify/medium.ttf
         - asset: assets/fonts/Spotify/bold.otf
           weight: 700
+        - asset: assets/fonts/Spotify/light.otf
+          weight: 300
   assets:
     - assets/images/
     

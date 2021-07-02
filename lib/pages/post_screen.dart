@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fodome/models/user.dart';
+import 'package:fodome/widgets/progress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,13 +12,43 @@ import 'home.dart';
 
 late User postUser;
 
-class PostScreen extends StatelessWidget {
+class PostScreen extends StatefulWidget {
   dynamic doc;
   PostScreen({required this.doc});
 
+  @override
+  _PostScreenState createState() => _PostScreenState();
+}
+
+class _PostScreenState extends State<PostScreen> {
+  bool _loading = true;
+  late String distance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Will throw exception since doc['distance'] is not available in Document SnapShot
+    if (widget.doc is Map<String, dynamic>) {
+      distance = widget.doc['distance'];
+      print("Distance inside map $distance");
+    } else {
+      distance = "";
+      print("Distance inside doc snapshot $distance");
+    }
+
+    getUser(widget.doc);
+
+    Future.delayed(Duration(milliseconds: 1000), () {
+      setState(() {
+        _loading = false;
+      });
+    });
+  }
+
   Widget title(title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       child: Text(
         title,
         style: TextStyle(
@@ -31,9 +62,10 @@ class PostScreen extends StatelessWidget {
 
   Widget description(description) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
       child: Text(
         description,
+        textAlign: TextAlign.justify,
         style: TextStyle(
           fontSize: 20.0,
           fontFamily: "Spotify",
@@ -47,10 +79,13 @@ class PostScreen extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (BuildContext context) =>
-                    FullImage(imageURL: doc['mediaUrl'])));
+          context,
+          CupertinoPageRoute(
+            builder: (BuildContext context) => FullImage(
+              imageURL: widget.doc['mediaUrl'],
+            ),
+          ),
+        );
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20.0),
@@ -73,9 +108,9 @@ class PostScreen extends StatelessWidget {
   }
 
   openMap() {
-    var location = doc['location'].toString();
-    MapsLauncher.launchCoordinates(doc['latitude'], doc['longitude'],
-        'Opening food post location : $location');
+    var location = widget.doc['location'].toString();
+    MapsLauncher.launchCoordinates(widget.doc['latitude'],
+        widget.doc['longitude'], 'Opening food post location : $location');
   }
 
   openPhone() async {
@@ -129,7 +164,7 @@ class PostScreen extends StatelessWidget {
     return {
       Marker(
         markerId: MarkerId("Post Location"),
-        position: LatLng(doc['latitude'], doc['longitude']),
+        position: LatLng(widget.doc['latitude'], widget.doc['longitude']),
         infoWindow: InfoWindow(title: 'Food Post Location'),
       ),
     };
@@ -148,7 +183,7 @@ class PostScreen extends StatelessWidget {
             markers: _createMarker(),
             liteModeEnabled: true,
             initialCameraPosition: CameraPosition(
-              target: LatLng(doc['latitude'], doc['longitude']),
+              target: LatLng(widget.doc['latitude'], widget.doc['longitude']),
               zoom: 15.0,
             ),
           ),
@@ -162,7 +197,6 @@ class PostScreen extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         height: 50.0,
-        width: 100.0,
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(10.0),
@@ -194,9 +228,99 @@ class PostScreen extends StatelessWidget {
     );
   }
 
+  Text subtitleText(text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: "Spotify",
+        fontWeight: FontWeight.w300,
+        fontStyle: FontStyle.italic,
+      ),
+    );
+  }
+
+  Widget subtitleDistance(distance) {
+    if (distance == "") {
+      return subtitleText("Enable Location to get details about distance.");
+    } else {
+      if (distance == "0.0") return subtitleText("Post is in your location");
+      return subtitleText("Post is $distance kms away from your location");
+    }
+  }
+
+  Widget userCard() {
+    String? userPhoto = postUser.photoUrl;
+    String? userDisplayName = postUser.displayName;
+    String? userEmail = postUser.email;
+    String? userPhone = postUser.phone;
+
+    return Padding(
+      padding:
+          const EdgeInsets.only(top: 8.0, left: 8.0, bottom: 8.0, right: 3.0),
+      child: Container(
+        height: 80.0,
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Container(
+          alignment: Alignment.center,
+          child: ListTile(
+            leading: userPhoto != null
+                ? ClipOval(
+                    child: CachedNetworkImage(
+                      height: 50.0,
+                      width: 50.0,
+                      imageUrl: userPhoto,
+                      placeholder: (context, url) => CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                  )
+                : ClipOval(
+                    child: Image.asset("assets/images/blank_photo.png"),
+                  ),
+            title: Padding(
+              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+              child: Text(userDisplayName!),
+            ),
+            subtitle: Container(
+              height: 40.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Email: " + userEmail!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    "Phone: " + userPhone!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            trailing: Container(
+              width: 40.0,
+              child: IconButton(
+                tooltip: "Send Email",
+                iconSize: 30.0,
+                icon: Icon(Icons.email_rounded, color: Colors.red[600]),
+                onPressed: () {
+                  print("Send Email");
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    getUser(doc);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -209,19 +333,26 @@ class PostScreen extends StatelessWidget {
           title: Text("Post Details"),
           centerTitle: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: ListView(
-            children: [
-              photo(context, doc['mediaUrl']),
-              title(doc['title']),
-              description(doc['description']),
-              dataCard("Quantity", doc['quantity']),
-              dataCard("Shelf Life", doc['shelfLife']),
-              map(),
-            ],
-          ),
-        ),
+        body: _loading
+            ? circularProgress()
+            : Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: ListView(
+                  children: [
+                    photo(context, widget.doc['mediaUrl']),
+                    title(widget.doc['title']),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: subtitleDistance(distance),
+                    ),
+                    description(widget.doc['description']),
+                    dataCard("Quantity", widget.doc['quantity']),
+                    dataCard("Shelf Life", widget.doc['shelfLife']),
+                    map(),
+                    userCard(),
+                  ],
+                ),
+              ),
         bottomNavigationBar: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
