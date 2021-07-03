@@ -196,7 +196,7 @@ class _PostScreenState extends State<PostScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        height: 50.0,
+        // height: 50.0,
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(10.0),
@@ -214,11 +214,14 @@ class _PostScreenState extends State<PostScreen> {
                   fontSize: 16.0,
                 ),
               ),
-              Text(
-                data.toString(),
-                style: TextStyle(
-                  fontFamily: "Spotify",
-                  fontSize: 16.0,
+              Expanded(
+                child: Text(
+                  data.toString(),
+                  // overflow: TextOverflow.,
+                  style: TextStyle(
+                    fontFamily: "Spotify",
+                    fontSize: 16.0,
+                  ),
                 ),
               ),
             ],
@@ -255,8 +258,7 @@ class _PostScreenState extends State<PostScreen> {
     String? userPhone = postUser.phone;
 
     return Padding(
-      padding:
-          const EdgeInsets.only(top: 8.0, left: 8.0, bottom: 8.0, right: 3.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Container(
         height: 80.0,
         decoration: BoxDecoration(
@@ -266,16 +268,21 @@ class _PostScreenState extends State<PostScreen> {
         child: Container(
           alignment: Alignment.center,
           child: ListTile(
+            contentPadding: EdgeInsets.zero,
             leading: userPhoto != null
-                ? ClipOval(
-                    child: CachedNetworkImage(
-                      height: 50.0,
-                      width: 50.0,
-                      imageUrl: userPhoto,
-                      placeholder: (context, url) => CircularProgressIndicator(
-                        color: Colors.white,
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        height: 50.0,
+                        width: 50.0,
+                        imageUrl: userPhoto,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   )
                 : ClipOval(
@@ -291,22 +298,25 @@ class _PostScreenState extends State<PostScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Email: " + userEmail!,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    "Phone: " + userPhone!,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text("Email: " + userEmail!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.0,
+                      )),
+                  Text("Phone: " + userPhone!,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.0,
+                      )),
                 ],
               ),
             ),
             trailing: Container(
+              margin: EdgeInsets.only(right: 10.0),
               width: 40.0,
               child: IconButton(
                 tooltip: "Send Email",
-                iconSize: 30.0,
+                iconSize: 25.0,
                 icon: Icon(Icons.email_rounded, color: Colors.red[600]),
                 onPressed: () {
                   print("Send Email");

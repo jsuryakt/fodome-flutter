@@ -5,11 +5,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fodome/pages/circles.dart';
 import 'package:fodome/pages/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fodome/pages/post_screen.dart';
 import 'package:fodome/pages/location.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -32,6 +34,7 @@ class _TimelineState extends State<Timeline>
   bool _locCheck = false;
   String text = "Enable Location";
   double currLat = 0.0, currLong = 0.0;
+  var listLatLong;
   double range = 20;
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
@@ -109,7 +112,7 @@ class _TimelineState extends State<Timeline>
             ),
           ),
           Expanded(
-            child: CupertinoSlider(
+            child: Slider(
               min: min,
               max: max,
               value: this.range,
@@ -275,6 +278,26 @@ class _TimelineState extends State<Timeline>
     );
   }
 
+  shareOptions(doc) async {
+    final RenderBox box = context.findRenderObject() as RenderBox;
+    if (Platform.isAndroid) {
+      var url = Uri.parse(doc['mediaUrl']);
+      var response = await get(url);
+      final documentDirectory = (await getExternalStorageDirectory())!.path;
+      File imgFile = new File('$documentDirectory/flutter.png');
+      imgFile.writeAsBytesSync(response.bodyBytes);
+      await Share.shareFiles(
+        ['$documentDirectory/flutter.png'],
+        subject: "Sharing this Food Donation Post with you from FODOME App",
+        text: getSharableText(doc),
+      );
+    } else {
+      await Share.share(getSharableText(doc),
+          subject: "Sharing this Food Donation Post with you from FODOME App",
+          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+    }
+  }
+
   Widget posts(snapshot) {
     var timelinePosts;
     var noOfPosts;
@@ -328,32 +351,8 @@ class _TimelineState extends State<Timeline>
                             right: 0.0,
                             bottom: 8.0,
                             child: ElevatedButton(
-                              onPressed: () async {
-                                final RenderBox box =
-                                    context.findRenderObject() as RenderBox;
-                                if (Platform.isAndroid) {
-                                  var url = Uri.parse(doc['mediaUrl']);
-                                  var response = await get(url);
-                                  final documentDirectory =
-                                      (await getExternalStorageDirectory())!
-                                          .path;
-                                  File imgFile = new File(
-                                      '$documentDirectory/flutter.png');
-                                  imgFile.writeAsBytesSync(response.bodyBytes);
-                                  await Share.shareFiles(
-                                    ['$documentDirectory/flutter.png'],
-                                    subject:
-                                        "Sharing this Food Donation Post with you from FODOME App",
-                                    text: getSharableText(doc),
-                                  );
-                                } else {
-                                  await Share.share(getSharableText(doc),
-                                      subject:
-                                          "Sharing this Food Donation Post with you from FODOME App",
-                                      sharePositionOrigin:
-                                          box.localToGlobal(Offset.zero) &
-                                              box.size);
-                                }
+                              onPressed: () {
+                                shareOptions(doc);
                               },
                               child: Icon(Icons.share_rounded,
                                   color: Colors.white),
@@ -583,8 +582,10 @@ class _TimelineState extends State<Timeline>
     }
 
     if (_locCheck) {
-      //Show loc specofic
+      // If location is enabled then show the posts under that location
+      //Show loc specific
       List<Map<String, dynamic>> lstOfPosts = [];
+      List listLatLng = [];
       snapshot.data!.docs.forEach((DocumentSnapshot doc) {
         Map<String, dynamic> locSpecific = new Map<String, dynamic>();
         // to get posts other than posted by the same user
@@ -615,16 +616,79 @@ class _TimelineState extends State<Timeline>
           locSpecific['username'] = doc['username'];
           locSpecific['description'] = doc['description'];
           locSpecific['distance'] = distance.toStringAsFixed(1);
-
           lstOfPosts.add(locSpecific);
+
+          listLatLng.add([
+            doc['displayName'],
+            doc['title'],
+            LatLng(doc['latitude'], doc['longitude'])
+          ]);
         }
       });
+      // setState(() {
+      this.listLatLong = listLatLng;
+      // });
       // Shows only posts under specific location
       return posts(lstOfPosts);
     } else {
       //Show all posts
       return posts(snapshot);
     }
+  }
+
+  Widget buildSheet(context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              width: MediaQuery.of(context).size.width * 1,
+              child: Icon(Icons.keyboard_arrow_down_rounded,
+                  color: Colors.grey, size: 40),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Showing posts under ${range.round()} km radius",
+              style: TextStyle(
+                fontFamily: "Spotify",
+                // fontWeight: FontWeight.w700,
+                fontSize: 18.0,
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: CirclesMap(currLat, currLong, range, listLatLong),
+          ),
+        ],
+      ),
+    );
+  }
+
+  mapsCircle(context) {
+    return showModalBottomSheet(
+      enableDrag: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      context: context,
+      builder: (context) => buildSheet(context),
+      isScrollControlled: true,
+    );
   }
 
   @override
@@ -703,7 +767,7 @@ class _TimelineState extends State<Timeline>
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
                       onTap: () {
-                        print("MAPS Circle incoming");
+                        mapsCircle(context);
                       },
                       child: ClipOval(
                         child: Icon(

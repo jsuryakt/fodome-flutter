@@ -460,6 +460,7 @@ class _UploadState extends State<Upload>
               ),
               style: raisedButtonStyle,
               onPressed: () {
+                FocusScope.of(context).requestFocus(new FocusNode());
                 getUserLocation();
               },
               icon: Icon(

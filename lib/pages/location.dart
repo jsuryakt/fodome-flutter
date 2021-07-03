@@ -94,10 +94,11 @@ class _LocationState extends State<Location>
   Set<Marker> _createMarker() {
     return <Marker>[
       Marker(
-          markerId: MarkerId('home'),
-          position: LatLng(lat, long),
-          icon: BitmapDescriptor.defaultMarker,
-          infoWindow: InfoWindow(title: 'Current Location'))
+        markerId: MarkerId('home'),
+        position: LatLng(lat, long),
+        icon: BitmapDescriptor.defaultMarker,
+        infoWindow: InfoWindow(title: 'Current Location'),
+      )
     ].toSet();
   }
 
