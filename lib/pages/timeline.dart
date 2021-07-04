@@ -28,7 +28,7 @@ class Timeline extends StatefulWidget {
 class _TimelineState extends State<Timeline>
     with AutomaticKeepAliveClientMixin<Timeline>, TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
-  List shortAddrs = [" ", " ", " ", " "];
+  List shortAddrs = [" ", " ", " ", " ", " ", " "];
   List<dynamic> users = [];
   String allPostText = "Showing all posts...";
   bool _locCheck = false;
@@ -119,11 +119,12 @@ class _TimelineState extends State<Timeline>
         this._locCheck = true;
         this.currLat = shortAddrs[4];
         this.currLong = shortAddrs[5];
+        this._isLoading = true;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Please Enable Location!"),
+          content: Text("Try again to detect Location!"),
         ),
       );
     }

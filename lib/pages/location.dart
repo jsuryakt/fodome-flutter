@@ -51,7 +51,7 @@ class _LocationState extends State<Location>
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(position.latitude, position.longitude),
-            zoom: 19.0,
+            zoom: 17.0,
           ),
         ),
       );
@@ -138,7 +138,7 @@ class _LocationState extends State<Location>
               ),
             ),
             Container(
-              height: 300.0,
+              height: 400.0,
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
