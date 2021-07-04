@@ -36,6 +36,8 @@ class _TimelineState extends State<Timeline>
   double currLat = 0.0, currLong = 0.0;
   var listLatLong;
   double range = 20;
+  var _choiceIndex = 1;
+  List<String> _choices = ["10", "20", "50", "Custom"];
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
   bool _isLoading = true;
@@ -107,7 +109,7 @@ class _TimelineState extends State<Timeline>
       controller.duration = Duration(seconds: 1);
     });
 
-    if (returnDatafromLoc != null) {
+    if (returnDatafromLoc != null && returnDatafromLoc.length != 0) {
       shortAddrs = returnDatafromLoc;
     } else {
       shortAddrs = [];
@@ -175,28 +177,27 @@ class _TimelineState extends State<Timeline>
   }
 
   //Sets the range to value specified and returns a button
-  rangeButton(setRange) {
-    return MaterialButton(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5.0),
-      ),
-      height: 30.0,
-      minWidth: 20.0,
-      color: Theme.of(context).primaryColor,
-      textColor: Colors.white,
-      onPressed: () {
+  rangeButton(setRange, index) {
+    return FilterChip(
+      label: Text(" " + _choices[index] + " "),
+      selected: _choiceIndex == index,
+      selectedColor: Colors.deepPurple,
+      checkmarkColor: Colors.white,
+      onSelected: (bool selected) {
         if (!_isSnackbarActive) {
           showSnack();
         }
-        // showSnack();
         setState(() {
+          _showCustomBar = false;
           this.range = setRange;
           _isLoading = true;
+          _choiceIndex = selected ? index : 1;
           // To call shimmer loading setting this to true
         });
       },
-      child: Text('${setRange.toInt()}'),
-      splashColor: Colors.purple[50],
+      backgroundColor: Colors.deepPurple[400],
+      // Theme.of(context).primaryColor,
+      labelStyle: TextStyle(color: Colors.white),
     );
   }
 
@@ -537,19 +538,26 @@ class _TimelineState extends State<Timeline>
                         fontSize: 15.0,
                       ),
                     ),
-                    rangeButton(10.0),
-                    rangeButton(20.0),
-                    rangeButton(50.0),
-                    SizedBox(
-                      height: 30.0,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _showCustomBar = !_showCustomBar;
-                          });
-                        },
-                        child: const Text('Custom'),
-                      ),
+                    rangeButton(10.0, 0),
+                    rangeButton(20.0, 1),
+                    rangeButton(50.0, 2),
+                    FilterChip(
+                      label: Text(" Custom "),
+                      selected: _choiceIndex == 3,
+                      selectedColor: Colors.deepPurple,
+                      checkmarkColor: Colors.white,
+                      onSelected: (bool selected) {
+                        if (!_isSnackbarActive) {
+                          showSnack();
+                        }
+                        setState(() {
+                          _showCustomBar = !_showCustomBar;
+                          _choiceIndex = 3;
+                          // To call shimmer loading setting this to true
+                        });
+                      },
+                      backgroundColor: Colors.deepPurple[400],
+                      labelStyle: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
@@ -759,26 +767,31 @@ class _TimelineState extends State<Timeline>
                 ),
               ),
               titleSpacing: 3.0,
-              title: Padding(
-                padding: const EdgeInsets.only(top: 5.0),
-                child: Text(
-                  _locCheck ? address(shortAddrs) : text,
-                  style: TextStyle(
-                    shadows: [
-                      Shadow(
-                        color: Colors.grey.shade100,
-                        offset: Offset(0, -6),
-                      )
-                    ],
-                    color: Colors.transparent,
-                    fontFamily: "Hind",
-                    fontSize: 16.0,
-                    decorationColor: Colors.grey.shade400,
-                    decoration: TextDecoration.underline,
-                    decorationStyle: TextDecorationStyle.dashed,
-                    decorationThickness: 4.0,
+              title: InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    _locCheck ? address(shortAddrs) : text,
+                    style: TextStyle(
+                      shadows: [
+                        Shadow(
+                          color: Colors.grey.shade100,
+                          offset: Offset(0, -6),
+                        )
+                      ],
+                      color: Colors.transparent,
+                      fontFamily: "Hind",
+                      fontSize: 16.0,
+                      decorationColor: Colors.grey.shade400,
+                      decoration: TextDecoration.underline,
+                      decorationStyle: TextDecorationStyle.dashed,
+                      decorationThickness: 4.0,
+                    ),
                   ),
                 ),
+                onTap: () {
+                  gotoLocationPage();
+                },
               ),
               leading: InkWell(
                 child: Icon(Icons.my_location_rounded),

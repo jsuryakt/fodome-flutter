@@ -11,8 +11,7 @@ class Location extends StatefulWidget {
   _LocationState createState() => _LocationState();
 }
 
-class _LocationState extends State<Location>
-    with AutomaticKeepAliveClientMixin<Location> {
+class _LocationState extends State<Location> {
   bool _clickedOnLocation = false;
   late GoogleMapController mapController;
   String? address = "";
@@ -234,7 +233,4 @@ class _LocationState extends State<Location>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
