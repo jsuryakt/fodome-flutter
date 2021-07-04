@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:fodome/pages/home.dart';
 import 'package:fodome/widgets/progress.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as Im;
 import 'package:uuid/uuid.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -57,6 +56,7 @@ class _UploadState extends State<Upload>
       source: ImageSource.camera,
       maxHeight: 675,
       maxWidth: 960,
+      imageQuality: 5,
     );
     setState(() {
       this.file = file;
@@ -68,7 +68,10 @@ class _UploadState extends State<Upload>
 
   handleChooseFromGallery() async {
     Navigator.pop(context);
-    PickedFile? file = await _picker.getImage(source: ImageSource.gallery);
+    PickedFile? file = await _picker.getImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+    );
     setState(() {
       this.file = file;
       if (file != null) {
@@ -142,13 +145,12 @@ class _UploadState extends State<Upload>
   }
 
   compressImage() async {
-    final tempDir = await getTemporaryDirectory();
-    final path = tempDir.path;
-    Im.Image? imageFile = Im.decodeImage(image.readAsBytesSync());
-    final compressedImageFile = File('$path/img_$postId.jpg')
-      ..writeAsBytesSync(Im.encodeJpg(imageFile!, quality: 50));
+    File compressedFile = await FlutterNativeImage.compressImage(
+      file!.path,
+      quality: 5,
+    );
     setState(() {
-      image = compressedImageFile;
+      image = compressedFile;
     });
   }
 

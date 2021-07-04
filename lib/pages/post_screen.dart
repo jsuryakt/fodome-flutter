@@ -39,7 +39,7 @@ class _PostScreenState extends State<PostScreen> {
 
     getUser(widget.doc);
 
-    Future.delayed(Duration(milliseconds: 1000), () {
+    Future.delayed(Duration(milliseconds: 1500), () {
       setState(() {
         _loading = false;
       });
@@ -271,17 +271,30 @@ class _PostScreenState extends State<PostScreen> {
             contentPadding: EdgeInsets.zero,
             leading: userPhoto != null
                 ? Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        height: 50.0,
-                        width: 50.0,
-                        imageUrl: userPhoto,
-                        placeholder: (context, url) =>
-                            CircularProgressIndicator(
-                          color: Colors.white,
+                    padding: const EdgeInsets.only(left: 12.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (BuildContext context) => FullImage(
+                              imageURL: userPhoto,
+                            ),
+                          ),
+                        );
+                      },
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          height: 50.0,
+                          width: 50.0,
+                          imageUrl: userPhoto,
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
                   )

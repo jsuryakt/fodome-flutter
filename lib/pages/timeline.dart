@@ -26,7 +26,7 @@ class Timeline extends StatefulWidget {
 }
 
 class _TimelineState extends State<Timeline>
-    with AutomaticKeepAliveClientMixin<Timeline> {
+    with AutomaticKeepAliveClientMixin<Timeline>, TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   List shortAddrs = [" ", " ", " ", " "];
   List<dynamic> users = [];
@@ -39,11 +39,19 @@ class _TimelineState extends State<Timeline>
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
   bool _isLoading = true;
-  // String userPhoto = currentUser!.photoUrl.toString();
+  late AnimationController controller;
 
   @override
   void initState() {
     super.initState();
+    controller = BottomSheet.createAnimationController(this);
+    controller.duration = Duration(seconds: 1);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   String address(List shortAddrs) {
@@ -81,18 +89,44 @@ class _TimelineState extends State<Timeline>
   }
 
   gotoLocationPage() async {
-    shortAddrs = await Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => Location(),
+    var returnDatafromLoc;
+    returnDatafromLoc = await showModalBottomSheet(
+      transitionAnimationController: controller,
+      enableDrag: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
-    );
-    setState(() {
-      this.shortAddrs = shortAddrs;
-      this._locCheck = true;
-      this.currLat = shortAddrs[4];
-      this.currLong = shortAddrs[5];
+      context: context,
+      builder: (context) => Location(),
+      isScrollControlled: true,
+      isDismissible: false,
+    ).whenComplete(() {
+      controller = BottomSheet.createAnimationController(this);
+      controller.duration = Duration(seconds: 1);
     });
+
+    if (returnDatafromLoc != null) {
+      shortAddrs = returnDatafromLoc;
+    } else {
+      shortAddrs = [];
+    }
+
+    if (shortAddrs.length != 0) {
+      setState(() {
+        this.shortAddrs = shortAddrs;
+        this._locCheck = true;
+        this.currLat = shortAddrs[4];
+        this.currLong = shortAddrs[5];
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please Enable Location!"),
+        ),
+      );
+    }
   }
 
   //To select a custom range using slider
@@ -284,10 +318,10 @@ class _TimelineState extends State<Timeline>
       var url = Uri.parse(doc['mediaUrl']);
       var response = await get(url);
       final documentDirectory = (await getExternalStorageDirectory())!.path;
-      File imgFile = new File('$documentDirectory/flutter.png');
+      File imgFile = new File('$documentDirectory/fodome_post.png');
       imgFile.writeAsBytesSync(response.bodyBytes);
       await Share.shareFiles(
-        ['$documentDirectory/flutter.png'],
+        ['$documentDirectory/fodome_post.png'],
         subject: "Sharing this Food Donation Post with you from FODOME App",
         text: getSharableText(doc),
       );
@@ -664,13 +698,16 @@ class _TimelineState extends State<Timeline>
               ),
             ),
           ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
+          Container(
+            height: 450.0,
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 8.0),
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: CirclesMap(currLat, currLong, range, listLatLong),
             ),
-            child: CirclesMap(currLat, currLong, range, listLatLong),
           ),
         ],
       ),
@@ -679,6 +716,7 @@ class _TimelineState extends State<Timeline>
 
   mapsCircle(context) {
     return showModalBottomSheet(
+      transitionAnimationController: controller,
       enableDrag: false,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
@@ -688,7 +726,10 @@ class _TimelineState extends State<Timeline>
       context: context,
       builder: (context) => buildSheet(context),
       isScrollControlled: true,
-    );
+    ).whenComplete(() {
+      controller = BottomSheet.createAnimationController(this);
+      controller.duration = Duration(seconds: 1);
+    });
   }
 
   @override
@@ -738,26 +779,9 @@ class _TimelineState extends State<Timeline>
                   ),
                 ),
               ),
-              leading: IconButton(
-                icon: Icon(Icons.my_location_rounded),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: Duration(milliseconds: 1500),
-                      content: Row(
-                        children: <Widget>[
-                          SizedBox(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3.0,
-                            ),
-                            height: 20.0,
-                            width: 20.0,
-                          ),
-                          Text("   Loading Map...")
-                        ],
-                      ),
-                    ),
-                  );
+              leading: InkWell(
+                child: Icon(Icons.my_location_rounded),
+                onTap: () {
                   gotoLocationPage();
                 },
               ),
@@ -781,15 +805,27 @@ class _TimelineState extends State<Timeline>
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: userPhoto != null
-                      ? ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: userPhoto,
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator(
-                              color: Colors.white,
+                      ? GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (BuildContext context) => FullImage(
+                                  imageURL: userPhoto!,
+                                ),
+                              ),
+                            );
+                          },
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: userPhoto,
+                              placeholder: (context, url) =>
+                                  CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
                             ),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
                           ),
                         )
                       : ClipOval(
@@ -797,7 +833,6 @@ class _TimelineState extends State<Timeline>
                         ),
                 ),
               ],
-              // centerTitle: true,
               backgroundColor: Colors.deepPurple[500],
             ),
           ),

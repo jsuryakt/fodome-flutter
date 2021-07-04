@@ -23,7 +23,8 @@ class CirclesMap extends StatefulWidget {
   _CirclesMapState createState() => _CirclesMapState();
 }
 
-class _CirclesMapState extends State<CirclesMap> {
+class _CirclesMapState extends State<CirclesMap>
+    with AutomaticKeepAliveClientMixin<CirclesMap> {
   Set<Marker> _markers = HashSet<Marker>();
   Set<Circle> _circles = HashSet<Circle>();
   late GoogleMapController _googleMapController;
@@ -119,18 +120,18 @@ class _CirclesMapState extends State<CirclesMap> {
   Widget build(BuildContext context) {
     return isLoading
         ? circularProgress()
-        : Container(
-            height: 450.0,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(widget.currLat, widget.currLat),
-              ),
-              markers: _markers,
-              // cameraTargetBounds : CameraTargetBounds.,
-              onMapCreated: _onMapCreated,
-              circles: _circles,
-              myLocationEnabled: true,
+        : GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(widget.currLat, widget.currLat),
             ),
+            markers: _markers,
+            // cameraTargetBounds : CameraTargetBounds.,
+            onMapCreated: _onMapCreated,
+            circles: _circles,
+            myLocationEnabled: true,
           );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

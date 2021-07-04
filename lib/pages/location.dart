@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fodome/widgets/progress.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,21 +13,30 @@ class Location extends StatefulWidget {
 
 class _LocationState extends State<Location>
     with AutomaticKeepAliveClientMixin<Location> {
-  var buttonTextStart = "Detect My Location";
-  var buttonTextSearch = "Detecting...";
-  bool _whichButtonText = false;
   bool _clickedOnLocation = false;
   late GoogleMapController mapController;
-  String? address;
-  String? locality;
-  String? state;
-  String? sublocality;
-  String? district;
+  String? address = "";
+  String? locality = "";
+  String? state = "";
+  String? sublocality = "";
+  String? district = "";
   var lat = 20.593684;
   var long = 78.96288;
+  bool _isLoading = true;
 
   void initState() {
     super.initState();
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    getUserLocation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   getUserLocation() async {
@@ -36,10 +46,16 @@ class _LocationState extends State<Location>
     List<Placemark> placemarks = await GeocodingPlatform.instance
         .placemarkFromCoordinates(position.latitude, position.longitude);
 
-    setState(() {
-      lat = position.latitude;
-      long = position.longitude;
-    });
+    if (mounted) {
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(position.latitude, position.longitude),
+            zoom: 19.0,
+          ),
+        ),
+      );
+    }
 
     Placemark placemark = placemarks[0];
     String completeAddress = "";
@@ -57,34 +73,18 @@ class _LocationState extends State<Location>
     completeAddress +=
         '${placemark.street}, ${placemark.subLocality}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
 
-    setState(() {
-      _whichButtonText = false;
-      address = completeAddress;
-      _clickedOnLocation = true;
-      state = placemark.administrativeArea;
-      district = placemark.subAdministrativeArea;
-      locality = placemark.locality;
-      sublocality = placemark.subLocality;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Taking you to home..'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      Timer(Duration(seconds: 3), () {
-        Navigator.pop(
-            context, [sublocality, locality, district, state, lat, long]);
+    if (mounted) {
+      setState(() {
+        lat = position.latitude;
+        long = position.longitude;
+        address = completeAddress;
+        state = placemark.administrativeArea;
+        district = placemark.subAdministrativeArea;
+        locality = placemark.locality;
+        sublocality = placemark.subLocality;
+        _clickedOnLocation = true;
       });
-    });
-
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(position.latitude, position.longitude),
-          zoom: 19.0,
-        ),
-      ),
-    );
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -104,71 +104,131 @@ class _LocationState extends State<Location>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: _clickedOnLocation
-            ? IconButton(
-                onPressed: () {
+    return WillPopScope(
+      onWillPop: () {
+        Future<bool> ret;
+        if (_clickedOnLocation) {
+          Navigator.pop(
+              context, [sublocality, locality, district, state, lat, long]);
+        } else {
+          Navigator.pop(context, []);
+        }
+        ret = true as Future<bool>;
+        return ret;
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 18.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            InkWell(
+              onTap: () {
+                if (_clickedOnLocation) {
                   Navigator.pop(context,
                       [sublocality, locality, district, state, lat, long]);
-                },
-                icon: Icon(Icons.arrow_back_ios_new_rounded),
-              )
-            : Text(""),
-        title: Text("Get current location"),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
+                } else {
+                  Navigator.pop(context, []);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                width: MediaQuery.of(context).size.width * 1,
+                child: Icon(Icons.keyboard_arrow_down_rounded,
+                    color: Colors.grey, size: 40),
+              ),
+            ),
             Container(
               height: 300.0,
-              child: GoogleMap(
-                mapType: MapType.normal,
-                markers: _createMarker(),
-                // liteModeEnabled: true,
-                onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(lat, long),
-                  zoom: 3.5,
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                scrollGesturesEnabled: true,
-                tiltGesturesEnabled: true,
-                trafficEnabled: false,
-                indoorViewEnabled: true,
-                compassEnabled: true,
-                rotateGesturesEnabled: true,
+                child: _isLoading
+                    ? circularProgress()
+                    : GoogleMap(
+                        mapType: MapType.normal,
+                        markers: _createMarker(),
+                        onMapCreated: _onMapCreated,
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(lat, long),
+                          zoom: 3.5,
+                        ),
+                        scrollGesturesEnabled: false,
+                        tiltGesturesEnabled: false,
+                        trafficEnabled: false,
+                        indoorViewEnabled: false,
+                        compassEnabled: false,
+                        rotateGesturesEnabled: false,
+                        mapToolbarEnabled: false,
+                        zoomControlsEnabled: false,
+                        zoomGesturesEnabled: false,
+                        liteModeEnabled: false,
+                        myLocationEnabled: false,
+                        buildingsEnabled: false,
+                      ),
               ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.purple,
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                shape: StadiumBorder(),
+            if (!_clickedOnLocation)
+              Container(
+                padding: EdgeInsets.all(15.0),
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3.0,
+                      ),
+                      height: 20.0,
+                      width: 20.0,
+                    ),
+                    Text(
+                      "   Detecting Location...",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        fontFamily: 'Spotify',
+                        // color: Colors.grey[800]
+                      ),
+                    )
+                  ],
+                ),
               ),
-              onPressed: () {
-                setState(() {
-                  _whichButtonText = true;
-                  _clickedOnLocation = false;
-                });
-                getUserLocation();
-              },
-              child:
-                  Text(_whichButtonText ? buttonTextSearch : buttonTextStart),
-            ),
-            SizedBox(height: 20),
             if (_clickedOnLocation)
-              Text(
-                "Current Location is \n" + address!,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 23,
-                    fontFamily: 'Roboto',
-                    color: Colors.grey[800]),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                margin: EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  "Current Location : \n" + address!,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 17,
+                    fontFamily: 'Spotify',
+                  ),
+                ),
               ),
+            if (_clickedOnLocation)
+              Container(
+                margin: EdgeInsets.only(bottom: 10.0),
+                height: 40.0,
+                width: MediaQuery.of(context).size.width * 0.85,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context,
+                        [sublocality, locality, district, state, lat, long]);
+                  },
+                  child: Text(
+                    "Confirm Location",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Spotify',
+                    ),
+                  ),
+                ),
+              )
           ],
         ),
       ),
