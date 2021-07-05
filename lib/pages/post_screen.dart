@@ -7,6 +7,7 @@ import 'package:fodome/widgets/progress.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 import 'home.dart';
 
@@ -331,8 +332,18 @@ class _PostScreenState extends State<PostScreen> {
                 tooltip: "Send Email",
                 iconSize: 25.0,
                 icon: Icon(Icons.email_rounded, color: Colors.red[600]),
-                onPressed: () {
-                  print("Send Email");
+                onPressed: () async {
+                  final emailSubject = "Query regarding fodome post";
+                  final emailBody =
+                      "Hello $userDisplayName,\n\nThis mail is regarding your post on FODOME - \'${widget.doc['title']}\' ";
+                  final Email email = Email(
+                    body: emailBody,
+                    subject: emailSubject,
+                    recipients: [userEmail],
+                    isHTML: false,
+                  );
+
+                  await FlutterEmailSender.send(email);
                 },
               ),
             ),

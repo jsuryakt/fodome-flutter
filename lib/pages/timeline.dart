@@ -37,7 +37,6 @@ class _TimelineState extends State<Timeline>
   var listLatLong;
   double range = 20;
   var _choiceIndex = 1;
-  List<String> _choices = ["10", "20", "50", "Custom"];
   bool _showCustomBar = false;
   bool _isSnackbarActive = false;
   bool _isLoading = true;
@@ -179,7 +178,7 @@ class _TimelineState extends State<Timeline>
   //Sets the range to value specified and returns a button
   rangeButton(setRange, index) {
     return FilterChip(
-      label: Text(" " + _choices[index] + " "),
+      label: Text(" ${setRange.toInt()} "),
       selected: _choiceIndex == index,
       selectedColor: Colors.deepPurple,
       checkmarkColor: Colors.white,
@@ -553,7 +552,6 @@ class _TimelineState extends State<Timeline>
                         setState(() {
                           _showCustomBar = !_showCustomBar;
                           _choiceIndex = 3;
-                          // To call shimmer loading setting this to true
                         });
                       },
                       backgroundColor: Colors.deepPurple[400],

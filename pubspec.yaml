@@ -57,6 +57,7 @@ dependencies:
   connectivity: ^3.0.6
   maps_launcher: ^2.0.0
   flutter_native_image: ^0.0.6
+  flutter_email_sender: ^5.0.1
 
 dev_dependencies:
   flutter_test:
