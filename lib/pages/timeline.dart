@@ -178,7 +178,7 @@ class _TimelineState extends State<Timeline>
   //Sets the range to value specified and returns a button
   rangeButton(setRange, index) {
     return FilterChip(
-      label: Text(" ${setRange.toInt()} "),
+      label: Text("${setRange.toInt()}"),
       selected: _choiceIndex == index,
       selectedColor: Colors.deepPurple,
       checkmarkColor: Colors.white,
@@ -541,7 +541,7 @@ class _TimelineState extends State<Timeline>
                     rangeButton(20.0, 1),
                     rangeButton(50.0, 2),
                     FilterChip(
-                      label: Text(" Custom "),
+                      label: Text("Custom"),
                       selected: _choiceIndex == 3,
                       selectedColor: Colors.deepPurple,
                       checkmarkColor: Colors.white,

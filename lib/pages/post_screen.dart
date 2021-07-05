@@ -66,7 +66,7 @@ class _PostScreenState extends State<PostScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
       child: Text(
         description,
-        textAlign: TextAlign.justify,
+        // textAlign: TextAlign.justify,
         style: TextStyle(
           fontSize: 20.0,
           fontFamily: "Spotify",
