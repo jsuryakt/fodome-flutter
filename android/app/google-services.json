@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "597610292401-3huai4neqc0miq6nltb5ut3m0si8gie8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "19c57cccd6f451af660773440a7ffb1d9a5bb8d5"
+          }
+        },
+        {
           "client_id": "597610292401-8t03r1vqnrrcv6jt2jt88ldd3uijfj2q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -43,6 +51,14 @@
           "android_info": {
             "package_name": "com.jsuryakt.fodome",
             "certificate_hash": "dc95746632a2be86315a724c11f841f3f40b93d9"
+          }
+        },
+        {
+          "client_id": "597610292401-srav4e9726buli8rh4qc6c760ipshiik.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "d0c094cdb5f7515b918adcaa2f14207f651ecf5c"
           }
         },
         {
