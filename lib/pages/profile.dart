@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fodome/pages/about.dart';
+import 'package:fodome/pages/edit_profile.dart';
 import 'package:fodome/widgets/header.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:fodome/pages/languages.dart';
+import 'languages.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -23,6 +25,8 @@ class _ProfileState extends State<Profile>
     widget.googleSignIn?.signOut();
   }
 
+  bool value = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,13 +43,14 @@ class _ProfileState extends State<Profile>
               title: 'Account',
               tiles: [
                 SettingsTile(
-                    title: 'Edit Profile', leading: Icon(Icons.account_box)),
-                SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
-                SettingsTile(title: 'Email', leading: Icon(Icons.email)),
-                SettingsTile(
-                  title: 'Logout',
-                  leading: Icon(Icons.exit_to_app),
-                  onTap: logout,
+                  title: 'Edit Profile',
+                  leading: Icon(Icons.account_box),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfile()),
+                    );
+                  },
                 ),
               ],
             ),
@@ -61,7 +66,16 @@ class _ProfileState extends State<Profile>
                         builder: (BuildContext context) => LanguagesScreen()));
                   },
                 ),
-                SettingsTile(title: 'Theme', leading: Icon(Icons.brush)),
+                SettingsTile.switchTile(
+                  title: 'Dark Theme',
+                  leading: Icon(Icons.brush),
+                  switchValue: value,
+                  onToggle: (bool val) {
+                    setState(() {
+                      value = val;
+                    });
+                  },
+                ),
               ],
             ),
             SettingsSection(
@@ -89,6 +103,15 @@ class _ProfileState extends State<Profile>
                     Navigator.of(context).push(CupertinoPageRoute(
                         builder: (BuildContext context) => AboutPage()));
                   },
+                ),
+              ],
+            ),
+            SettingsSection(
+              tiles: [
+                SettingsTile(
+                  title: 'Logout',
+                  leading: Icon(Icons.exit_to_app),
+                  onTap: logout,
                 ),
               ],
             ),
