@@ -247,7 +247,7 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: CupertinoTabBar(
           currentIndex: activeIndex,
           onTap: onTap,
-          activeColor: Colors.purple,
+          activeColor: Colors.deepPurple,
           items: [
             BottomNavigationBarItem(
               label: "Home",

@@ -22,14 +22,14 @@ class _EditProfileState extends State<EditProfile>
   Widget build(BuildContext context) {
     return new Scaffold(
         body: new Container(
-      color: Colors.purple[50],
+      color: Colors.deepPurple[50],
       child: new ListView(
         children: <Widget>[
           Column(
             children: <Widget>[
               new Container(
                 height: 250.0,
-                color: Colors.purple[50],
+                color: Colors.deepPurple[50],
                 child: new Column(
                   children: <Widget>[
                     Padding(
@@ -66,7 +66,7 @@ class _EditProfileState extends State<EditProfile>
                                 height: 140.0,
                                 decoration: new BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color : Color(0xFFCE93D8),
+                                  color : Color(0xFFD1C4E9),
                                   image: new DecorationImage(
                                     image: new ExactAssetImage('assets/images/'),
                                     fit: BoxFit.cover,
@@ -80,7 +80,7 @@ class _EditProfileState extends State<EditProfile>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 new CircleAvatar(
-                                  backgroundColor: Colors.purple,
+                                  backgroundColor: Colors.deepPurple,
                                   radius: 25.0,
                                   child: new Icon(
                                     Icons.camera_alt,
@@ -370,7 +370,7 @@ class _EditProfileState extends State<EditProfile>
   Widget _getEditIcon() {
     return new GestureDetector(
       child: new CircleAvatar(
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.deepPurple,
         radius: 14.0,
         child: new Icon(
           Icons.edit,

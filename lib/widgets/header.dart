@@ -16,6 +16,6 @@ AppBar header(context,
       ),
     ),
     centerTitle: true,
-    backgroundColor: Colors.purple,
+    backgroundColor: Colors.deepPurple,
   );
 }

@@ -808,7 +808,8 @@ class _TimelineState extends State<Timeline>
                 },
               ),
               leading: InkWell(
-                child: Icon(Icons.my_location_rounded),
+                child: Icon(Icons.my_location_rounded, 
+                color: Colors.grey[200]),
                 onTap: () {
                   gotoLocationPage();
                 },

@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         title: 'Fodome',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.deepPurple,
           primaryColor: Colors.white,
           brightness: Brightness.light,
           accentColor: Colors.black,
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
         ), 
         darkTheme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.deepPurple,
           primaryColor: Colors.black,
           brightness: Brightness.dark,
           accentColor: Colors.white,
