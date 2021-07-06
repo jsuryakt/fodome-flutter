@@ -364,7 +364,7 @@ class _PostScreenState extends State<PostScreen> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                   deletePost();
                 },
                 child: Text(
@@ -403,12 +403,12 @@ class _PostScreenState extends State<PostScreen> {
             content: Text("Post Deleted!"),
           ),
         );
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-            builder: (context) => Home(),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   CupertinoPageRoute(
+        //     builder: (context) => Home(),
+        //   ),
+        // );
       }
     });
     // delete uploaded image for thep ost

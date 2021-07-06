@@ -175,26 +175,29 @@ class _TimelineState extends State<Timeline>
 
   //Sets the range to value specified and returns a button
   rangeButton(setRange, index) {
-    return FilterChip(
-      label: Text("${setRange.toInt()}"),
-      selected: _choiceIndex == index,
-      selectedColor: Colors.deepPurple,
-      checkmarkColor: Colors.white,
-      onSelected: (bool selected) {
-        if (!_isSnackbarActive) {
-          showSnack();
-        }
-        setState(() {
-          _showCustomBar = false;
-          this.range = setRange;
-          _isLoading = true;
-          _choiceIndex = selected ? index : 1;
-          // To call shimmer loading setting this to true
-        });
-      },
-      backgroundColor: Colors.deepPurple[400],
-      // Theme.of(context).primaryColor,
-      labelStyle: TextStyle(color: Colors.white),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5.0),
+      child: FilterChip(
+        label: Text(" ${setRange.toInt()} "),
+        selected: _choiceIndex == index,
+        selectedColor: Colors.deepPurple,
+        checkmarkColor: Colors.white,
+        onSelected: (bool selected) {
+          if (!_isSnackbarActive) {
+            showSnack();
+          }
+          setState(() {
+            _showCustomBar = false;
+            this.range = setRange;
+            _isLoading = true;
+            _choiceIndex = selected ? index : 1;
+            // To call shimmer loading setting this to true
+          });
+        },
+        backgroundColor: Colors.deepPurple[400],
+        // Theme.of(context).primaryColor,
+        labelStyle: TextStyle(color: Colors.white),
+      ),
     );
   }
 
@@ -526,39 +529,48 @@ class _TimelineState extends State<Timeline>
             //If location is enabled then show range options
             if (_locCheck)
               Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      "Range (km):",
-                      style: TextStyle(
-                        fontFamily: "Spotify",
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15.0,
+                padding: const EdgeInsets.only(
+                    left: 15, right: 10, bottom: 5, top: 5),
+                child: Container(
+                  height: 40.0,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: <Widget>[
+                      Center(
+                        child: Text(
+                          "Range (km) : ",
+                          style: TextStyle(
+                            fontFamily: "Spotify",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0,
+                          ),
+                        ),
                       ),
-                    ),
-                    rangeButton(10.0, 0),
-                    rangeButton(20.0, 1),
-                    rangeButton(50.0, 2),
-                    FilterChip(
-                      label: Text("Custom"),
-                      selected: _choiceIndex == 3,
-                      selectedColor: Colors.deepPurple,
-                      checkmarkColor: Colors.white,
-                      onSelected: (bool selected) {
-                        if (!_isSnackbarActive) {
-                          showSnack();
-                        }
-                        setState(() {
-                          _showCustomBar = !_showCustomBar;
-                          _choiceIndex = 3;
-                        });
-                      },
-                      backgroundColor: Colors.deepPurple[400],
-                      labelStyle: TextStyle(color: Colors.white),
-                    ),
-                  ],
+                      rangeButton(10.0, 0),
+                      rangeButton(20.0, 1),
+                      rangeButton(50.0, 2),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: FilterChip(
+                          label: Text(" Custom "),
+                          selected: _choiceIndex == 3,
+                          selectedColor: Colors.deepPurple,
+                          checkmarkColor: Colors.white,
+                          onSelected: (bool selected) {
+                            if (!_isSnackbarActive) {
+                              showSnack();
+                            }
+                            setState(() {
+                              _showCustomBar = !_showCustomBar;
+                              _choiceIndex = 3;
+                            });
+                          },
+                          backgroundColor: Colors.deepPurple[400],
+                          labelStyle: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               )
             else
@@ -679,6 +691,9 @@ class _TimelineState extends State<Timeline>
   }
 
   Widget buildSheet(context) {
+    var circleText = "Showing posts under ${range.round()} km radius";
+    if (listLatLong.length == 0)
+      circleText = "Oops!.. No posts under ${range.round()} km radius";
     return Container(
       padding: EdgeInsets.all(10),
       child: Column(
@@ -698,7 +713,7 @@ class _TimelineState extends State<Timeline>
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Showing posts under ${range.round()} km radius",
+              circleText,
               style: TextStyle(
                 fontFamily: "Spotify",
                 // fontWeight: FontWeight.w700,
