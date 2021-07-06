@@ -15,6 +15,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(
@@ -22,14 +23,24 @@ class MyApp extends StatelessWidget {
         title: 'Fodome',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.blue,
+          primaryColor: Colors.white,
           brightness: Brightness.light,
-        ),
+          accentColor: Colors.black,
+          accentIconTheme: IconThemeData(color: Colors.white),
+          dividerColor: Colors.white54,
+          scaffoldBackgroundColor: Colors.white,
+        ), 
         darkTheme: ThemeData(
-          primarySwatch: Colors.deepPurple,
-          accentColor: Colors.deepPurple[100],
+          primarySwatch: Colors.blue,
+          primaryColor: Colors.black,
           brightness: Brightness.dark,
+          accentColor: Colors.white,
+          accentIconTheme: IconThemeData(color: Colors.black),
+          dividerColor: Colors.black12,
+          scaffoldBackgroundColor: Color(0xFF131313),
         ),
+        themeMode: ThemeMode.system,
         home: Home(),
       ),
     );

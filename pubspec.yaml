@@ -59,13 +59,13 @@ dependencies:
   flutter_native_image: ^0.0.6
   flutter_email_sender: ^5.0.1
   flutter_native_splash: ^1.2.0
+  gradient_app_bar: ^0.1.3
 
 flutter_native_splash:
   color: "#ffffff"
   image: assets/images/custom_fodome_marker.png
   android: true
   ios: true
-
 
 dev_dependencies:
   flutter_test:

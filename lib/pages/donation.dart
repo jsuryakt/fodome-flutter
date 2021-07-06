@@ -75,11 +75,6 @@ class _DonationState extends State<Donation>
             padding: const EdgeInsets.only(left: 12.0),
             child: Text(
               "Donate",
-              style: TextStyle(
-                fontFamily: "Signatra",
-                fontSize: 40.0,
-                color: Colors.white,
-              ),
             ),
           ),
           actions: [
@@ -87,7 +82,6 @@ class _DonationState extends State<Donation>
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(Icons.search),
             ),
-            Icon(Icons.more_vert),
           ],
           backgroundColor: Colors.purple,
         ),
