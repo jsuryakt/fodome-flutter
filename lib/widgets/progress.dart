@@ -5,7 +5,7 @@ Container circularProgress() {
       alignment: Alignment.center,
       padding: EdgeInsets.only(top: 10.0),
       child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation(Colors.purple),
+        valueColor: AlwaysStoppedAnimation(Colors.deepPurple),
       ));
 }
 
@@ -13,7 +13,7 @@ Container linearProgress() {
   return Container(
     padding: EdgeInsets.only(bottom: 10.0),
     child: LinearProgressIndicator(
-      valueColor: AlwaysStoppedAnimation(Colors.purple),
+      valueColor: AlwaysStoppedAnimation(Colors.deepPurple),
     ),
   );
 }

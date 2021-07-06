@@ -75,15 +75,16 @@ class _DonationState extends State<Donation>
             padding: const EdgeInsets.only(left: 12.0),
             child: Text(
               "Donate",
+              style: TextStyle(color: Colors.white),
             ),
           ),
           actions: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.search),
+              child: Icon((Icons.search), color: Colors.white ),
             ),
           ],
-          backgroundColor: Colors.purple,
+          backgroundColor: Colors.deepPurple,
         ),
         body: ListView(
           padding: EdgeInsets.all(16),

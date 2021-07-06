@@ -30,7 +30,7 @@ class _ProfileState extends State<Profile>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.deepPurple[50],
       appBar: header(
         context,
         titleText: "User Settings",
@@ -39,7 +39,7 @@ class _ProfileState extends State<Profile>
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 15.0),
         child: SettingsList(
-          backgroundColor: Colors.grey[100],
+          backgroundColor: Colors.deepPurple[50],
           sections: [
             SettingsSection(
               title: 'Account',

@@ -406,9 +406,9 @@ class _EditProfileState extends State<EditProfile>
   }
 
   Widget _getEditIcon() {
-    return GestureDetector(
-      child: CircleAvatar(
-        backgroundColor: Colors.purple,
+    return new GestureDetector(
+      child: new CircleAvatar(
+        backgroundColor: Colors.deepPurple,
         radius: 14.0,
         child: Icon(
           Icons.edit,
