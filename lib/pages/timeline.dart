@@ -18,8 +18,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share/share.dart';
 import 'package:shimmer/shimmer.dart';
 
-final usersRef = FirebaseFirestore.instance.collection('users');
-
 class Timeline extends StatefulWidget {
   @override
   _TimelineState createState() => _TimelineState();
@@ -346,9 +344,12 @@ class _TimelineState extends State<Timeline>
         .map<Widget>(
           (doc) => InkWell(
             onTap: () {
+              var isOwner;
+              isOwner = currentUser!.id == doc['ownerId'];
               Navigator.of(context).push(CupertinoPageRoute(
                   builder: (BuildContext context) => PostScreen(
                         doc: doc,
+                        isOwner: isOwner,
                       )));
             },
             child: Container(
