@@ -15,7 +15,8 @@ late User postUser;
 
 class PostScreen extends StatefulWidget {
   dynamic doc;
-  PostScreen({required this.doc});
+  bool isOwner;
+  PostScreen({required this.doc, required this.isOwner});
 
   @override
   _PostScreenState createState() => _PostScreenState();
@@ -23,6 +24,7 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   bool _loading = true;
+  // bool delete = false;
   late String distance;
 
   @override
@@ -353,6 +355,66 @@ class _PostScreenState extends State<PostScreen> {
     );
   }
 
+  handleDeletePost(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Remove this post ?"),
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                  deletePost();
+                },
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SimpleDialogOption(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Cancel')),
+            ],
+          );
+        });
+  }
+
+  deletePost() async {
+    // delete post itself
+    postsRef
+        .doc(currentUser!.id)
+        .collection('userPosts')
+        .doc(widget.doc['postId'])
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    timelineRef.doc(widget.doc['postId']).get().then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Post Deleted!"),
+          ),
+        );
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => Home(),
+          ),
+        );
+      }
+    });
+    // delete uploaded image for thep ost
+    storageRef.child("post_${widget.doc['postId']}.jpg").delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -366,6 +428,18 @@ class _PostScreenState extends State<PostScreen> {
           ),
           title: Text("Post Details"),
           centerTitle: true,
+          actions: [
+            if (widget.isOwner)
+              InkWell(
+                onTap: () {
+                  handleDeletePost(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Icon(Icons.delete),
+                ),
+              ),
+          ],
         ),
         body: _loading
             ? circularProgress()

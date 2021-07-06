@@ -187,7 +187,7 @@ class _UploadState extends State<Upload>
       "quantity": quantity,
     });
 
-    timelineRef.add({
+    timelineRef.doc(postId).set({
       "postId": postId,
       "ownerId": currentUser!.id,
       "username": currentUser!.username,
