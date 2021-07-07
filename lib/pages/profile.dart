@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fodome/pages/about.dart';
 import 'package:fodome/pages/edit_profile.dart';
+import 'package:fodome/pages/feedback.dart';
 import 'package:fodome/widgets/header.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -89,6 +90,10 @@ class _ProfileState extends State<Profile>
                 SettingsTile(
                   title: 'Submit Feedback',
                   leading: Icon(Icons.feedback_outlined),
+                  onTap: () {
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (BuildContext context) => ReachUs()));
+                  },
                 ),
               ],
             ),
