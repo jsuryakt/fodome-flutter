@@ -22,14 +22,14 @@ class SignUpWidget extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               margin: EdgeInsets.symmetric(
-                horizontal: 20,
+                horizontal: 15,
               ),
               // width: 300,
               child: Text(
                 'Welcome to\nFodome',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 40,
+                  fontSize: 38,
                   fontWeight: FontWeight.w700,
                   fontFamily: "Spotify",
                 ),

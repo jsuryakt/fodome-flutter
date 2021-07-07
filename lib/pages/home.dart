@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -50,6 +51,7 @@ class _HomeState extends State<Home> {
   bool isSigningIn = false;
 
   bool isOffline = false;
+  final inactiveColor = Colors.grey;
 
   checkForInitialMessage() async {
     await Firebase.initializeApp();
@@ -224,12 +226,19 @@ class _HomeState extends State<Home> {
     googleSignIn.signIn();
   }
 
-  onTap(int pageIndex) {
+  changePage(int pageIndex) {
     setState(() {
       activeIndex = pageIndex;
       pageController!.animateToPage(pageIndex,
           duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     });
+  }
+
+  Text navName(name) {
+    return Text(
+      name,
+      style: TextStyle(fontSize: 15),
+    );
   }
 
   Scaffold buildAuthScreen() {
@@ -252,30 +261,44 @@ class _HomeState extends State<Home> {
         },
         // physics: NeverScrollableScrollPhysics(),
       ),
-      bottomNavigationBar: CupertinoTabBar(
-          currentIndex: activeIndex,
-          onTap: onTap,
-          activeColor: Colors.deepPurple,
-          items: [
-            BottomNavigationBarItem(
-              label: "Home",
-              icon: Icon(Icons.home_rounded),
-            ),
-            BottomNavigationBarItem(
-              label: "Post",
-              icon: Icon(Icons.add_box_rounded),
-            ),
-            BottomNavigationBarItem(
-              label: "Donate",
-              icon: Icon(
-                Icons.volunteer_activism_rounded,
-              ),
-            ),
-            BottomNavigationBarItem(
-              label: "Settings",
-              icon: Icon(Icons.account_circle_rounded),
-            ),
-          ]),
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: activeIndex,
+        showElevation: true,
+        iconSize: 28,
+        itemCornerRadius: 50,
+        containerHeight: 60,
+        onItemSelected: changePage,
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(
+            title: navName("Home"),
+            icon: Icon(Icons.home_rounded),
+            activeColor: Colors.deepPurple,
+            inactiveColor: inactiveColor,
+            textAlign: TextAlign.center,
+          ),
+          BottomNavyBarItem(
+            title: navName("Post"),
+            icon: Icon(Icons.add_box_rounded),
+            activeColor: Colors.deepOrangeAccent,
+            inactiveColor: inactiveColor,
+            textAlign: TextAlign.center,
+          ),
+          BottomNavyBarItem(
+            title: navName("Donate"),
+            icon: Icon(Icons.volunteer_activism_rounded),
+            activeColor: Colors.green,
+            inactiveColor: inactiveColor,
+            textAlign: TextAlign.center,
+          ),
+          BottomNavyBarItem(
+            title: navName("Settings"),
+            icon: Icon(Icons.account_circle_rounded),
+            activeColor: Colors.blueAccent,
+            inactiveColor: inactiveColor,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -292,14 +315,14 @@ class _HomeState extends State<Home> {
                   alignment: Alignment.centerLeft,
                   child: Container(
                     margin: EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 15,
                       vertical: 200,
                     ),
                     child: Text(
                       'Signing in...',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 40,
+                        fontSize: 38,
                         fontWeight: FontWeight.w700,
                         fontFamily: "Spotify",
                       ),
