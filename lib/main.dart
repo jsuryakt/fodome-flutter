@@ -15,7 +15,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
           accentIconTheme: IconThemeData(color: Colors.white),
           dividerColor: Colors.white54,
           scaffoldBackgroundColor: Colors.white,
-        ), 
+        ),
         darkTheme: ThemeData(
           primarySwatch: Colors.deepPurple,
           primaryColor: Colors.black,
@@ -40,7 +39,7 @@ class MyApp extends StatelessWidget {
           dividerColor: Colors.black12,
           scaffoldBackgroundColor: Color(0xFF131313),
         ),
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         home: Home(),
       ),
     );

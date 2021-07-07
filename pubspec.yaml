@@ -60,6 +60,7 @@ dependencies:
   flutter_email_sender: ^5.0.1
   flutter_native_splash: ^1.2.0
   gradient_app_bar: ^0.1.3
+  font_awesome_flutter: ^9.1.0
 
 flutter_native_splash:
   color: "#ffffff"

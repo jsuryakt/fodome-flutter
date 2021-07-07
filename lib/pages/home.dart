@@ -12,6 +12,8 @@ import 'package:fodome/pages/donation.dart';
 import 'package:fodome/pages/timeline.dart';
 import 'package:fodome/pages/upload.dart';
 import 'package:fodome/pages/profile.dart';
+import 'package:fodome/widgets/background_painter.dart';
+import 'package:fodome/widgets/sign_up_widget.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fodome/pages/create_account.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -45,6 +47,7 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController? pageController = PageController();
   int activeIndex = 0;
+  bool isSigningIn = false;
 
   bool isOffline = false;
 
@@ -108,8 +111,6 @@ class _HomeState extends State<Home> {
   }
 
   void connectionChanged(dynamic hasConnection) {
-    print("Inside connection Changed");
-    print(hasConnection);
     setState(() {
       isOffline = !hasConnection;
     });
@@ -129,6 +130,9 @@ class _HomeState extends State<Home> {
   }
 
   createUserInFirestore() async {
+    setState(() {
+      isSigningIn = true;
+    });
     // 1) check if user exists in users collection in database (according to their id)
     GoogleSignInAccount? user = googleSignIn.currentUser;
     DocumentSnapshot doc = await usersRef.doc(user!.id).get();
@@ -157,6 +161,10 @@ class _HomeState extends State<Home> {
     }
 
     currentUser = User.fromDocument(doc);
+    setState(() {
+      isSigningIn = false;
+      activeIndex = 0;
+    });
   }
 
   void registerNotification() async {
@@ -271,53 +279,49 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Scaffold buildNonAuthScreen() {
-    if (isOffline) {
-      return noConnection();
-    }
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [Colors.teal, Colors.purple],
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+  Widget buildLoading() => Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
           children: [
-            Text(
-              "Fodome",
-              style: TextStyle(
-                fontFamily: "Signatra",
-                fontSize: 90.0,
-                color: Colors.white,
-              ),
+            CustomPaint(
+              painter: BackgroundPainter(),
             ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  activeIndex = 0;
-                });
-                login();
-              },
-              child: Container(
-                width: 260.0,
-                height: 60.0,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/google_signin_button.png'),
-                    fit: BoxFit.cover,
+            Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 200,
+                    ),
+                    child: Text(
+                      'Signing in...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: "Spotify",
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ],
             ),
           ],
         ),
-      ),
+      );
+
+  Widget buildNonAuthScreen() {
+    if (isOffline) {
+      return noConnection();
+    }
+    if (isSigningIn) return buildLoading();
+    return Scaffold(
+      body: SignUpWidget(login),
     );
   }
 
@@ -356,9 +360,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     connectionChanged(connectionStatus.hasConnection);
-    print("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKK");
-    print(isOffline);
-    print("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKK");
     if (isOffline) {
       return noConnection();
     }

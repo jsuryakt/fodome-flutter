@@ -25,7 +25,7 @@ class _ProfileState extends State<Profile>
     widget.googleSignIn?.signOut();
   }
 
-  bool value = true;
+  bool value = false;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +74,8 @@ class _ProfileState extends State<Profile>
                   switchValue: value,
                   onToggle: (bool val) {
                     setState(() {
+                      print(value);
+                      print(val);
                       value = val;
                     });
                   },
