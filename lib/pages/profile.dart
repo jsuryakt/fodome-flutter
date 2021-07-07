@@ -30,101 +30,99 @@ class _ProfileState extends State<Profile>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.deepPurple[50],
-      appBar: header(
-        context,
-        titleText: "User Settings",
-        fontSize: 20.0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0),
-        child: SettingsList(
-          backgroundColor: Colors.deepPurple[50],
-          sections: [
-            SettingsSection(
-              title: 'Account',
-              tiles: [
-                SettingsTile(
-                  title: 'Edit Profile',
-                  leading: Icon(Icons.account_box),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) => EditProfile()),
-                    );
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: 'Customize',
-              tiles: [
-                SettingsTile(
-                  title: 'Language',
-                  subtitle: 'English',
-                  leading: Icon(Icons.language),
-                  onTap: () {
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (BuildContext context) => LanguagesScreen()));
-                  },
-                ),
-                SettingsTile.switchTile(
-                  title: 'Dark Theme',
-                  leading: Icon(Icons.brush),
-                  switchValue: value,
-                  onToggle: (bool val) {
-                    setState(() {
-                      // print(value);
-                      // print(val);
-                      value = val;
-                    });
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: 'Others',
-              tiles: [
-                SettingsTile(
-                    title: 'View notifications',
-                    leading: Icon(Icons.notifications)),
-                SettingsTile(
-                  title: 'Submit Feedback',
-                  leading: Icon(Icons.feedback_outlined),
-                  onTap: () {
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (BuildContext context) => ReachUs()));
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: 'Misc',
-              tiles: [
-                SettingsTile(
-                    title: 'Terms of Service',
-                    leading: Icon(Icons.description)),
-                SettingsTile(
-                  title: 'About',
-                  leading: Icon(Icons.perm_device_information),
-                  onTap: () {
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (BuildContext context) => AboutPage()));
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
-              tiles: [
-                SettingsTile(
-                  title: 'Logout',
-                  leading: Icon(Icons.exit_to_app),
-                  onTap: logout,
-                ),
-              ],
-            ),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade100,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: SettingsList(
+            backgroundColor: Colors.grey.shade100,
+            sections: [
+              SettingsSection(
+                title: 'Account',
+                tiles: [
+                  SettingsTile(
+                    title: 'Edit Profile',
+                    leading: Icon(Icons.account_box),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(builder: (context) => EditProfile()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              SettingsSection(
+                title: 'Customize',
+                tiles: [
+                  SettingsTile(
+                    title: 'Language',
+                    subtitle: 'English',
+                    leading: Icon(Icons.language),
+                    onTap: () {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (BuildContext context) =>
+                              LanguagesScreen()));
+                    },
+                  ),
+                  SettingsTile.switchTile(
+                    title: 'Dark Theme',
+                    leading: Icon(Icons.brush),
+                    switchValue: value,
+                    onToggle: (bool val) {
+                      setState(() {
+                        // print(value);
+                        // print(val);
+                        value = val;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              SettingsSection(
+                title: 'Others',
+                tiles: [
+                  SettingsTile(
+                      title: 'View notifications',
+                      leading: Icon(Icons.notifications)),
+                  SettingsTile(
+                    title: 'Submit Feedback',
+                    leading: Icon(Icons.feedback_outlined),
+                    onTap: () {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (BuildContext context) => ReachUs()));
+                    },
+                  ),
+                ],
+              ),
+              SettingsSection(
+                title: 'Misc',
+                tiles: [
+                  SettingsTile(
+                      title: 'Terms of Service',
+                      leading: Icon(Icons.description)),
+                  SettingsTile(
+                    title: 'About',
+                    leading: Icon(Icons.perm_device_information),
+                    onTap: () {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (BuildContext context) => AboutPage()));
+                    },
+                  ),
+                ],
+              ),
+              SettingsSection(
+                tiles: [
+                  SettingsTile(
+                    title: 'Logout',
+                    leading: Icon(Icons.exit_to_app),
+                    onTap: logout,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -58,7 +58,7 @@ class _DonationState extends State<Donation>
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Colors.deepOrange,
+              color: Colors.green,
             ),
           ),
           onPressed: () => _linkToOpenInWebView(url),
@@ -68,51 +68,41 @@ class _DonationState extends State<Donation>
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.deepPurple[50],
-        appBar: AppBar(
-          title: Padding(
-            padding: const EdgeInsets.only(left: 157.5),
-            child: Text(
-              "Donate",
-              style: TextStyle(color: Colors.white),
-            ),
+  Widget build(BuildContext context) => SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.grey[50],
+          body: ListView(
+            padding: EdgeInsets.all(16),
+            children: [
+              buildImageInteractionCard(
+                  imageURL:
+                      'https://cdn.givind.org/static/images/sharing-banner.jpg',
+                  link:
+                      'https://www.giveindia.org/missions/mission-no-child-hungry'),
+              buildImageInteractionCard(
+                  imageURL:
+                      'https://www.riseagainsthungerindia.org/wp-content/uploads/2020/03/RAHlogo_india-01-scaled-e1593010950565.jpg',
+                  link:
+                      'https://www.riseagainsthunger.org/?form=meettheneed2021'),
+              buildImageInteractionCard(
+                  imageURL:
+                      'https://pbs.twimg.com/profile_images/1074995644383678464/aBdy_9zC_400x400.jpg',
+                  link: 'https://www.akshayapatra.org/onlinedonations'),
+              buildImageInteractionCard(
+                  imageURL:
+                      'https://pbs.twimg.com/profile_images/1386940291001688077/Whbs8eED_400x400.jpg',
+                  link: 'https://www.feedingindia.org/donate/feedingindia'),
+              buildImageInteractionCard(
+                  imageURL:
+                      'https://www.welthungerhilfe.org/typo3conf/ext/ig_project/Resources/Public/Icons/whh-logo.gif',
+                  link:
+                      'https://www.welthungerhilfe.org/our-work/countries/india/'),
+              buildImageInteractionCard(
+                  imageURL:
+                      'https://cdn.slidesharecdn.com/ss_thumbnails/indiafoodbankingnetwork-leadingthefightagainsthungermay2015-150525161426-lva1-app6891-thumbnail-4.jpg?cb=1437641517',
+                  link: 'https://pages.razorpay.com/india-foodbanking-network'),
+            ],
           ),
-          backgroundColor: Colors.deepPurple,
-        ),
-        body: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            buildImageInteractionCard(
-                imageURL:
-                    'https://cdn.givind.org/static/images/sharing-banner.jpg',
-                link:
-                    'https://www.giveindia.org/missions/mission-no-child-hungry'),
-            buildImageInteractionCard(
-                imageURL:
-                    'https://www.riseagainsthungerindia.org/wp-content/uploads/2020/03/RAHlogo_india-01-scaled-e1593010950565.jpg',
-                link:
-                    'https://www.riseagainsthunger.org/?form=meettheneed2021'),
-            buildImageInteractionCard(
-                imageURL:
-                    'https://pbs.twimg.com/profile_images/1074995644383678464/aBdy_9zC_400x400.jpg',
-                link: 'https://www.akshayapatra.org/onlinedonations'),
-            buildImageInteractionCard(
-                imageURL:
-                    'https://pbs.twimg.com/profile_images/1386940291001688077/Whbs8eED_400x400.jpg',
-                link:
-                    'https://www.feedingindia.org/donate/feedingindia'),
-            buildImageInteractionCard(
-                imageURL:
-                    'https://www.welthungerhilfe.org/typo3conf/ext/ig_project/Resources/Public/Icons/whh-logo.gif',
-                link:
-                    'https://www.welthungerhilfe.org/our-work/countries/india/'),
-            buildImageInteractionCard(
-                imageURL:
-                    'https://cdn.slidesharecdn.com/ss_thumbnails/indiafoodbankingnetwork-leadingthefightagainsthungermay2015-150525161426-lva1-app6891-thumbnail-4.jpg?cb=1437641517',
-                link:
-                    'https://pages.razorpay.com/india-foodbanking-network'),
-          ],
         ),
       );
 
