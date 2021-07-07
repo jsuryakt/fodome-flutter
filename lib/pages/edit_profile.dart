@@ -370,7 +370,7 @@ class _EditProfileState extends State<EditProfile>
                   child: RaisedButton(
                 child: Text("Save"),
                 textColor: Colors.white,
-                color: Colors.green,
+                color: Colors.deepPurple,
                 onPressed: () {
                   updateProfileData();
                 },
@@ -387,7 +387,7 @@ class _EditProfileState extends State<EditProfile>
                   child: RaisedButton(
                 child: Text("Cancel"),
                 textColor: Colors.white,
-                color: Colors.red,
+                color: Colors.grey,
                 onPressed: () {
                   setState(() {
                     _status = true;
