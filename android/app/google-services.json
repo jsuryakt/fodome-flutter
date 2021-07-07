@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "597610292401-6pijuvsjrerbecufsng92h5nd4mb2rr1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "d9f0f99a814566e72e20d11a5b598fc11c2713cf"
+          }
+        },
+        {
           "client_id": "597610292401-8t03r1vqnrrcv6jt2jt88ldd3uijfj2q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -43,6 +51,14 @@
           "android_info": {
             "package_name": "com.jsuryakt.fodome",
             "certificate_hash": "b8c6541c61980b164b66d25255137848795232dc"
+          }
+        },
+        {
+          "client_id": "597610292401-hmu44vu1qdmtch3eh1ibque1e8irovsq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jsuryakt.fodome",
+            "certificate_hash": "741268cceefcf1bbedb0566de44b936be6f1628c"
           }
         },
         {

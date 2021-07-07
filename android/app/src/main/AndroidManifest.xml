@@ -25,7 +25,7 @@
     </queries>
     
    <application
-        android:label="fodome"
+        android:label="Fodome"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
       android:value="AIzaSyC5rEL4wVgRwZvf_Oc_uCDmkWtftFtdFtI"/>
