@@ -26,7 +26,7 @@ class _ProfileState extends State<Profile>
     widget.googleSignIn?.signOut();
   }
 
-  bool value = true;
+  bool value = false;
 
   @override
   Widget build(BuildContext context) {

@@ -208,7 +208,7 @@ class _ReachUsState extends State<ReachUs> {
                       "https://github.com/jsuryakt/fodome-flutter"),
                   child: Icon(
                     FontAwesomeIcons.github,
-                    color: Colors.orange,
+                    color: Colors.grey[900],
                     size: 35,
                   ),
                 ),
@@ -219,7 +219,7 @@ class _ReachUsState extends State<ReachUs> {
                   onTap: () => launchUrl(
                       "https://play.google.com/store/apps/"),
                   child: Icon(FontAwesomeIcons.googlePlay,
-                      color: Color(0xfffb3958), size: 35),
+                      color: Color(0xfff48fb1), size: 35),
                 ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.06,
