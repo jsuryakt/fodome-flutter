@@ -11,7 +11,7 @@ import 'package:uuid/uuid.dart';
 import 'package:geocoding/geocoding.dart';
 
 final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
-  primary: Colors.deepOrange,
+  primary: Colors.deepOrangeAccent,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(8.0),
   ),
@@ -26,8 +26,7 @@ class Upload extends StatefulWidget {
   _UploadState createState() => _UploadState();
 }
 
-class _UploadState extends State<Upload>
-    with AutomaticKeepAliveClientMixin<Upload> {
+class _UploadState extends State<Upload> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
@@ -49,6 +48,7 @@ class _UploadState extends State<Upload>
 
   bool _isSnackbarActive = false;
   final ScrollController _scrollController = ScrollController();
+  bool locPressed = false;
 
   handleTakePhoto() async {
     Navigator.pop(context);
@@ -56,7 +56,7 @@ class _UploadState extends State<Upload>
       source: ImageSource.camera,
       maxHeight: 675,
       maxWidth: 960,
-      imageQuality: 5,
+      imageQuality: 20,
     );
     setState(() {
       this.file = file;
@@ -147,7 +147,7 @@ class _UploadState extends State<Upload>
   compressImage() async {
     File compressedFile = await FlutterNativeImage.compressImage(
       file!.path,
-      quality: 5,
+      quality: 20,
     );
     setState(() {
       image = compressedFile;
@@ -232,11 +232,6 @@ class _UploadState extends State<Upload>
       quantity: quantityController.text,
       shelfLife: shelflifeController.text,
     );
-    // locationController.clear();
-    // titleController.clear();
-    // descriptionController.clear();
-    // quantityController.clear();
-    // shelflifeController.clear();
 
     setState(() {
       file = null;
@@ -272,7 +267,6 @@ class _UploadState extends State<Upload>
       _scrollController.animateTo(_scrollController.position.minScrollExtent,
           duration: Duration(milliseconds: 300), curve: Curves.fastOutSlowIn);
       handleSubmit();
-      // isUploading = true;
     } else {
       setState(() {
         isUploading = false;
@@ -294,13 +288,40 @@ class _UploadState extends State<Upload>
     }
   }
 
+  Text labelText(text) {
+    return Text(
+      text,
+      style: TextStyle(fontSize: 17.0),
+    );
+  }
+
   Scaffold buildUploadForm() {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white70,
         leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: clearImage),
+            onPressed: () {
+              setState(() {
+                _validateTitle = false;
+                _validateDescription = false;
+                _validateQuantity = false;
+                _validateShelflife = false;
+                _validateLocation = false;
+
+                lat = 0.0;
+                long = 0.0;
+
+                locPressed = false;
+                isUploading = false;
+                locationController.clear();
+                titleController.clear();
+                descriptionController.clear();
+                quantityController.clear();
+                shelflifeController.clear();
+              });
+              clearImage();
+            }),
         title: Text(
           "Post Details",
           style: TextStyle(color: Colors.black),
@@ -308,13 +329,14 @@ class _UploadState extends State<Upload>
         actions: [
           TextButton(
             onPressed: () {
-              isUploading ? null : handlePost();
+              if (!isUploading) handlePost();
             },
             child: Text(
               isUploading ? "Please Wait" : "Post",
               style: TextStyle(
-                color: Colors.blueAccent,
-                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+                fontFamily: "Spotify",
+                fontWeight: FontWeight.w700,
                 fontSize: 20.0,
               ),
             ),
@@ -345,129 +367,146 @@ class _UploadState extends State<Upload>
           Padding(
             padding: EdgeInsets.only(top: 10.0),
           ),
-          ListTile(
-            leading: Text(
-              "Title:",
-              style: TextStyle(fontSize: 17.0),
-            ),
-            title: Container(
-              width: 250.0,
-              child: TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  hintText: "Enter a title...",
-                  errorText: _validateTitle ? 'Title Can\'t Be Empty' : null,
-                  // border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Text(
-              "Description:",
-              style: TextStyle(fontSize: 17.0),
-            ),
-            title: Container(
-              width: 250.0,
-              child: TextField(
-                controller: descriptionController,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText: "Enter a description...",
-                  errorText: _validateDescription
-                      ? 'Description Can\'t Be Empty'
-                      : null,
-                  // border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Text(
-              "Quantity:",
-              style: TextStyle(fontSize: 17.0),
-            ),
-            title: Container(
-              width: 250.0,
-              child: TextField(
-                controller: quantityController,
-                decoration: InputDecoration(
-                  hintText: "Enter details about weight and quantity...",
-                  errorText:
-                      _validateQuantity ? 'Quantity Can\'t Be Empty' : null,
-                  // border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Text(
-              "Shelf Life:",
-              style: TextStyle(fontSize: 17.0),
-            ),
-            title: Container(
-              width: 250.0,
-              child: TextField(
-                controller: shelflifeController,
-                decoration: InputDecoration(
-                  hintText: "Best time to eat before expiry...",
-                  errorText:
-                      _validateShelflife ? 'Shelf Life Can\'t Be Empty' : null,
-                  // border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(
-              Icons.pin_drop,
-              color: Colors.orange,
-              size: 35.0,
-            ),
-            title: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Container(
-                width: 250.0,
-                child: TextField(
-                  enabled: false,
-                  controller: locationController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText:
-                        "Where was this photo taken?\nClick below to get Location",
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (_validateLocation)
-            Center(
-              child: Text(
-                "Location Can\'t Be Empty\nPlease enable Location and try again!",
-                style: TextStyle(
-                  color: Colors.red,
-                ),
-              ),
-            ),
           Container(
-            width: 200.0,
-            height: 100.0,
-            alignment: Alignment.center,
-            child: ElevatedButton.icon(
-              label: Text(
-                "Use Current Location",
-                style: TextStyle(color: Colors.white),
+            margin: EdgeInsets.only(
+              left: 9.0,
+              right: 9.0,
+              // bottom: 15.0,
+            ),
+            child: Card(
+              elevation: 3.0,
+              // shadowColor: Colors.grey[300],
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              style: raisedButtonStyle,
-              onPressed: () {
-                FocusScope.of(context).requestFocus(new FocusNode());
-                getUserLocation();
-              },
-              icon: Icon(
-                Icons.my_location,
-                color: Colors.white,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: labelText("Title:"),
+                    title: Container(
+                      width: 250.0,
+                      child: TextField(
+                        controller: titleController,
+                        decoration: InputDecoration(
+                          hintText: "Enter a title...",
+                          errorText:
+                              _validateTitle ? 'Title Can\'t Be Empty' : null,
+                          // border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: labelText("Description:"),
+                    title: Container(
+                      width: 250.0,
+                      child: TextField(
+                        controller: descriptionController,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          hintText: "Enter a description...",
+                          errorText: _validateDescription
+                              ? 'Description Can\'t Be Empty'
+                              : null,
+                          // border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: labelText("Quantity:"),
+                    title: Container(
+                      width: 250.0,
+                      child: TextField(
+                        controller: quantityController,
+                        decoration: InputDecoration(
+                          hintText:
+                              "Enter details about weight and quantity...",
+                          errorText: _validateQuantity
+                              ? 'Quantity Can\'t Be Empty'
+                              : null,
+                          // border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: labelText("Shelf Life:"),
+                    title: Container(
+                      width: 250.0,
+                      child: TextField(
+                        controller: shelflifeController,
+                        decoration: InputDecoration(
+                          hintText: "Best time to eat before expiry...",
+                          errorText: _validateShelflife
+                              ? 'Shelf Life Can\'t Be Empty'
+                              : null,
+                          // border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Divider(),
+                  ListTile(
+                    leading: Icon(
+                      Icons.location_pin,
+                      color: Colors.deepOrangeAccent,
+                      size: 35.0,
+                    ),
+                    title: Container(
+                      child: TextField(
+                        enabled: false,
+                        controller: locationController,
+                        maxLines: 2,
+                        decoration: InputDecoration(
+                          hintText: locPressed
+                              ? "Locating.."
+                              : "Click below to get Location",
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (_validateLocation)
+                    Center(
+                      child: Text(
+                        "Location Can\'t Be Empty\nPlease enable Location and try again!",
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.deepOrangeAccent,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          locPressed = true;
+                        });
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        getUserLocation();
+                      },
+                      child: Container(
+                        width: 175.0,
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(Icons.my_location),
+                            Text(
+                              "Use Current Location",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -488,54 +527,11 @@ class _UploadState extends State<Upload>
     Placemark placemark = placemarks[0];
     String completeAddress =
         '${placemark.subLocality} ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea} ${placemark.postalCode}, ${placemark.country}';
-    // String completeAddress = address([
-    //   placemark.subLocality,
-    //   placemark.locality,
-    //   placemark.subAdministrativeArea,
-    //   placemark.administrativeArea
-    // ]);
-    // print(completeAddress);
     locationController.text = completeAddress;
   }
 
-  bool get wantKeepAlive => true;
-
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return file == null ? buildSplashScreen() : buildUploadForm();
   }
-
-  // String address(List list) {
-  //   late var text;
-  //   int flag = 0;
-  //   try {
-  //     var lengthOfArr = 4; //sublocality, locality, district, state
-  //     if (list[lengthOfArr - 1] != null) {
-  //       for (int idx = 0; idx < lengthOfArr - 1; idx++) {
-  //         if (list[idx].length > 2 && list[idx + 1].length > 2) {
-  //           text = list[idx] + ", " + list[idx + 1];
-  //           if (idx <= 1) {
-  //             flag = 1;
-  //           }
-  //           break;
-  //         }
-  //       }
-  //     }
-  //     if (flag == 0) {
-  //       if (list[0].length > 2 && list[2].length > 2) {
-  //         text = list[0] + ", " + list[2];
-  //       } else if (list[0].length > 2 && list[3].length > 2) {
-  //         text = list[0] + ", " + list[3];
-  //       } else if (list[1].length > 2 && list[3].length > 2) {
-  //         text = list[1] + ", " + list[3];
-  //       }
-  //     } else {
-  //       text += ", " + list[3];
-  //     }
-  //   } on Exception catch (_) {
-  //     print('Length Null.. No locaction');
-  //   }
-  //   return text;
-  // }
 }

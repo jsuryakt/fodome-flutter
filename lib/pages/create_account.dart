@@ -30,7 +30,7 @@ class _CreateAccountState extends State<CreateAccount> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: header(context,
-          titleText: "Set up your profile", removeBackButton: true),
+          titleText: "Set up your profile", removeBackButton: true,color: Colors.deepPurple,),
       body: Form(
         key: _formKey,
         child: ListView(

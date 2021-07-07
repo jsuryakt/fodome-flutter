@@ -4,7 +4,8 @@ AppBar header(context,
     {String titleText = "",
     String font = "",
     double fontSize = 0.0,
-    removeBackButton = false}) {
+    removeBackButton = false,
+    required Color color}) {
   return AppBar(
     automaticallyImplyLeading: removeBackButton ? false : true,
     title: Text(
@@ -16,6 +17,6 @@ AppBar header(context,
       ),
     ),
     centerTitle: true,
-    backgroundColor: Colors.deepPurple,
+    backgroundColor: color,
   );
 }
