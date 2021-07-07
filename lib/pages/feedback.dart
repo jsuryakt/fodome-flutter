@@ -34,7 +34,7 @@ class _ReachUsState extends State<ReachUs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xffede7f6),
       appBar: AppBar(
         title: Text("Reach Us"),
