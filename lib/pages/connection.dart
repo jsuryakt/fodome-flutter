@@ -46,11 +46,11 @@ class ConnectionStatusSingleton {
   Future<bool> checkConnection() async {
     bool previousConnection = hasConnection;
     var connectivityResult = await (Connectivity().checkConnectivity());
-    print(connectivityResult.toString());
-    print("connectivityResult == ConnectivityResult.mobile");
-    print(connectivityResult == ConnectivityResult.mobile);
-    print("connectivityResult == ConnectivityResult.wifi");
-    print(connectivityResult == ConnectivityResult.wifi);
+    // print(connectivityResult.toString());
+    // print("connectivityResult == ConnectivityResult.mobile");
+    // print(connectivityResult == ConnectivityResult.mobile);
+    // print("connectivityResult == ConnectivityResult.wifi");
+    // print(connectivityResult == ConnectivityResult.wifi);
     if (connectivityResult == ConnectivityResult.mobile) {
       hasConnection = true;
       // I am connected to a mobile network.

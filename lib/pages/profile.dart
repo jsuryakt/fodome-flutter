@@ -75,8 +75,8 @@ class _ProfileState extends State<Profile>
                   switchValue: value,
                   onToggle: (bool val) {
                     setState(() {
-                      print(value);
-                      print(val);
+                      // print(value);
+                      // print(val);
                       value = val;
                     });
                   },

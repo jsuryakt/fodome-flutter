@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fodome/pages/home.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -8,6 +9,11 @@ class ReachUs extends StatefulWidget {
 }
 
 class _ReachUsState extends State<ReachUs> {
+  bool notValid = true;
+  String subject =
+      "Feedback from ${currentUser!.displayName} regarding fodome app!";
+  String email = "team.fodome@gmail.com";
+
   launchUrl(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -16,19 +22,7 @@ class _ReachUsState extends State<ReachUs> {
     }
   }
 
-  _launchURLMail() async {
-    const url =
-        'ashashir7@gmail.com ';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  TextEditingController t1 = TextEditingController();
   TextEditingController t2 = TextEditingController();
-  late String name;
   late String message;
 
   @override
@@ -57,65 +51,28 @@ class _ReachUsState extends State<ReachUs> {
                 textAlign: TextAlign.justify,
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                onChanged: (val) {
-                  if (val != null || val.length > 0) name = val;
-                },
-                controller: t1,
-                decoration: InputDecoration(
-                  fillColor: Color(0xffe6e6e6),
-                  filled: true,
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  hintText: 'Your name',
-                  hintStyle: TextStyle(
-                      color: Colors.blueGrey, fontFamily: 'RobotoSlab'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
-                    ),
-                    borderSide: BorderSide(color: Color(0xffbdbdbd)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
-                    ),
-                    borderSide: BorderSide(color:Color(0xffbdbdbd)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
-                    ),
-                    borderSide: BorderSide(color: Color(0xffbdbdbd)),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.0001,
-            ),
             Padding(
               padding: const EdgeInsets.all(10),
               child: TextField(
                 onChanged: (val) {
-                  if (val != null || val.length > 0) message = val;
+                  if (val.trim().length > 0) {
+                    message = val;
+                    notValid = false;
+                  } else
+                    notValid = true;
                 },
                 textAlign: TextAlign.start,
                 controller: t2,
                 decoration: InputDecoration(
                   fillColor: Color(0xffe6e6e6),
+                  errorText: notValid ? "Enter a valid message" : "",
                   filled: true,
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 35, horizontal: 20),
-                  hintText: 'Your message',
+                  hintText: 'Your message / feedback / bug spot',
                   hintStyle: TextStyle(
                     color: Colors.blueGrey,
-                    fontFamily: 'RobotoSlab',
+                    fontFamily: 'Spotify',
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
@@ -138,23 +95,22 @@ class _ReachUsState extends State<ReachUs> {
                 ),
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.03,
-            ),
             Card(
-              color: Colors.green[300],
+              color: Colors.deepPurple.shade400,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
               ),
               margin: EdgeInsets.symmetric(horizontal: 10.0),
-              child: GestureDetector(
+              child: InkWell(
                 onTap: () {
-                  setState(() {
-                    t1.clear();
-                    t2.clear();
-                    launchUrl(
-                        "mailto:ashashir7@gmail.com?subject=From $name&body=$message");
-                  });
+                  if (!notValid) {
+                    launchUrl("mailto:$email?subject=$subject&body=$message");
+                    setState(() {
+                      t2.clear();
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Thank you for your feedback!')));
+                  }
                 },
                 child: ListTile(
                   title: Row(
@@ -204,8 +160,8 @@ class _ReachUsState extends State<ReachUs> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => launchUrl(
-                      "https://github.com/jsuryakt/fodome-flutter"),
+                  onTap: () =>
+                      launchUrl("https://github.com/jsuryakt/fodome-flutter"),
                   child: Icon(
                     FontAwesomeIcons.github,
                     color: Colors.grey[900],
@@ -216,8 +172,7 @@ class _ReachUsState extends State<ReachUs> {
                   width: MediaQuery.of(context).size.width * 0.06,
                 ),
                 GestureDetector(
-                  onTap: () => launchUrl(
-                      "https://play.google.com/store/apps/"),
+                  onTap: () => launchUrl("https://play.google.com/store/apps/"),
                   child: Icon(FontAwesomeIcons.googlePlay,
                       color: Color(0xfff48fb1), size: 35),
                 ),
@@ -231,6 +186,4 @@ class _ReachUsState extends State<ReachUs> {
       ),
     );
   }
-
-
 }

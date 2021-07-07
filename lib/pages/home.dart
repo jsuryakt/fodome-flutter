@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
     _connectionChangeStream =
         connectionStatus.connectionChange.listen(connectionChanged);
 
-    print("Inside Init");
+    // print("Inside Init");
     isOffline = !connectionStatus.hasConnection;
 
     registerNotification();
