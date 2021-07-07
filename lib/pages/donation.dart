@@ -25,7 +25,7 @@ class _DonationState extends State<Donation>
       Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(36),
         ),
         child: Column(
           children: [
@@ -69,21 +69,15 @@ class _DonationState extends State<Donation>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: Colors.purple[50],
+        backgroundColor: Colors.deepPurple[50],
         appBar: AppBar(
           title: Padding(
-            padding: const EdgeInsets.only(left: 12.0),
+            padding: const EdgeInsets.only(left: 157.5),
             child: Text(
               "Donate",
               style: TextStyle(color: Colors.white),
             ),
           ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon((Icons.search), color: Colors.white ),
-            ),
-          ],
           backgroundColor: Colors.deepPurple,
         ),
         body: ListView(
@@ -105,9 +99,19 @@ class _DonationState extends State<Donation>
                 link: 'https://www.akshayapatra.org/onlinedonations'),
             buildImageInteractionCard(
                 imageURL:
+                    'https://pbs.twimg.com/profile_images/1386940291001688077/Whbs8eED_400x400.jpg',
+                link:
+                    'https://www.feedingindia.org/donate/feedingindia'),
+            buildImageInteractionCard(
+                imageURL:
                     'https://www.welthungerhilfe.org/typo3conf/ext/ig_project/Resources/Public/Icons/whh-logo.gif',
                 link:
                     'https://www.welthungerhilfe.org/our-work/countries/india/'),
+            buildImageInteractionCard(
+                imageURL:
+                    'https://cdn.slidesharecdn.com/ss_thumbnails/indiafoodbankingnetwork-leadingthefightagainsthungermay2015-150525161426-lva1-app6891-thumbnail-4.jpg?cb=1437641517',
+                link:
+                    'https://pages.razorpay.com/india-foodbanking-network'),
           ],
         ),
       );
