@@ -222,8 +222,10 @@ class _TimelineState extends State<Timeline>
         .format(doc['timestamp'].toDate())
         .toString();
     String location = doc['location'].toString();
+    String link =
+        "https://maps.google.com/?q=${doc['latitude'].toString()},${doc['longitude'].toString()}";
     String shareText =
-        "Check out this food posted by $displayName\n\n\"$title\"\n\nDescription: $description\n\nPosted On: $dateTime\n\nLocation: $location \n\nCheck out more details at fodome.app";
+        "Check out this food post by $displayName\n\n\"$title\"\n\nDescription: $description\n\nPosted On: $dateTime\n\nLocation: $location \n\nOpen in Maps:$link \n\nCheck out more details at fodome.app";
     return shareText;
   }
 
@@ -655,9 +657,6 @@ class _TimelineState extends State<Timeline>
               doc['longitude'],
             ) /
             1000); //dividing by 1000 to get kms because distanceBetween() returns in mtrs
-
-        // String loc = doc['location'];
-        // print("Distance between $text and $loc is $distance");
         if (distance < range) {
           locSpecific['ownerId'] = doc['ownerId'];
           locSpecific['displayName'] = doc['displayName'];

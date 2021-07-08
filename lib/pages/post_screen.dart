@@ -34,10 +34,8 @@ class _PostScreenState extends State<PostScreen> {
     // Will throw exception since doc['distance'] is not available in Document SnapShot
     if (widget.doc is Map<String, dynamic>) {
       distance = widget.doc['distance'];
-      // print("Distance inside map $distance");
     } else {
       distance = "";
-      // print("Distance inside doc snapshot $distance");
     }
 
     getUser(widget.doc);
