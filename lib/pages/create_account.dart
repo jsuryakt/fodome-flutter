@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fodome/widgets/header.dart';
 import 'dart:async';
 
 class CreateAccount extends StatefulWidget {
@@ -29,8 +28,17 @@ class _CreateAccountState extends State<CreateAccount> {
   Widget build(BuildContext parentContext) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: header(context,
-          titleText: "Set up your profile", removeBackButton: true,color: Colors.deepPurple,),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          "Set up your profile",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+      ),
       body: Form(
         key: _formKey,
         child: ListView(

@@ -92,14 +92,14 @@ class _EditProfileState extends State<EditProfile>
         body: isLoading
             ? circularProgress()
             : Container(
-                color: Colors.purple[50],
+                color: Colors.grey.shade100,
                 child: ListView(
                   children: <Widget>[
                     Column(
                       children: <Widget>[
                         Container(
                           height: 200.0,
-                          color: Colors.purple[50],
+                          color: Colors.grey.shade100,
                           child: Column(
                             children: <Widget>[
                               Padding(
@@ -121,9 +121,9 @@ class _EditProfileState extends State<EditProfile>
                                         child: Text(
                                           'PROFILE',
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight.w700,
                                               fontSize: 20.0,
-                                              fontFamily: 'sans-serif',
+                                              fontFamily: 'Spotify',
                                               color: Colors.black),
                                         ),
                                       )
@@ -159,7 +159,7 @@ class _EditProfileState extends State<EditProfile>
                           ),
                         ),
                         Container(
-                          color: Color(0xFFF3E5F5),
+                          color: Colors.grey.shade100,
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 25.0),
                             child: Column(
@@ -180,7 +180,7 @@ class _EditProfileState extends State<EditProfile>
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
                                             Text(
-                                              'Parsonal Information',
+                                              'Personal Information',
                                               style: TextStyle(
                                                   fontSize: 18.0,
                                                   fontWeight: FontWeight.bold),

@@ -7,14 +7,15 @@ class LanguagesScreen extends StatefulWidget {
 }
 
 class _LanguagesScreenState extends State<LanguagesScreen>
-
     with AutomaticKeepAliveClientMixin<LanguagesScreen> {
-      int languageIndex = 0;
+  int languageIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(title: Text('Languages')),
       body: SettingsList(
+        backgroundColor: Colors.grey.shade100,
         sections: [
           SettingsSection(tiles: [
             SettingsTile(

@@ -29,7 +29,7 @@ class _ReachUsState extends State<ReachUs> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xffede7f6),
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: Text("Reach Us"),
       ),
@@ -46,7 +46,7 @@ class _ReachUsState extends State<ReachUs> {
                 style: TextStyle(
                   fontSize: 17.5,
                   height: 1.3,
-                  fontFamily: 'RobotoSlab',
+                  fontFamily: 'Spotify',
                 ),
                 textAlign: TextAlign.justify,
               ),
@@ -64,7 +64,7 @@ class _ReachUsState extends State<ReachUs> {
                 textAlign: TextAlign.start,
                 controller: t2,
                 decoration: InputDecoration(
-                  fillColor: Color(0xffe6e6e6),
+                  fillColor: Colors.grey.shade200,
                   errorText: notValid ? "Enter a valid message" : "",
                   filled: true,
                   contentPadding:
@@ -129,7 +129,7 @@ class _ReachUsState extends State<ReachUs> {
                         "Send",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Colors.white, fontFamily: 'RobotoSlab'),
+                            color: Colors.white, fontFamily: 'Spotify'),
                       )),
                     ],
                   ),
@@ -149,9 +149,9 @@ class _ReachUsState extends State<ReachUs> {
                 "Alternatively, you can also report bugs and errors on following platforms",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'RobotoSlab',
+                  fontFamily: 'Spotify',
                   color: Colors.blueGrey[600],
-                  fontSize: 17,
+                  fontSize: 16,
                   height: 1.3,
                 ),
               ),

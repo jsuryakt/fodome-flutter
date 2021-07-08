@@ -113,7 +113,7 @@ class _UploadState extends State<Upload> {
 
   Widget buildSplashScreen() {
     return Container(
-      color: Color(0xFFF3E5F5),
+      color: Colors.grey.shade200,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

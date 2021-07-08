@@ -70,10 +70,18 @@ class _DonationState extends State<Donation>
   @override
   Widget build(BuildContext context) => SafeArea(
         child: Scaffold(
-          backgroundColor: Colors.grey[50],
+          backgroundColor: Colors.grey.shade100,
           body: ListView(
             padding: EdgeInsets.all(16),
             children: [
+              // Text(
+              //   'Donate',
+              //   style: TextStyle(
+              //     fontFamily: "Spotify",
+              //     fontSize: 50,
+              //     fontWeight: FontWeight.w700,
+              //   ),
+              // ),
               buildImageInteractionCard(
                   imageURL:
                       'https://cdn.givind.org/static/images/sharing-banner.jpg',

@@ -140,8 +140,8 @@ class _TimelineState extends State<Timeline>
           Text(
             "${min.toInt()}",
             style: TextStyle(
-              fontFamily: "Hind",
-              fontWeight: FontWeight.bold,
+              fontFamily: "Spotify",
+              fontWeight: FontWeight.w700,
               fontSize: 20.0,
             ),
           ),
@@ -163,8 +163,8 @@ class _TimelineState extends State<Timeline>
           Text(
             "${max.toInt()}",
             style: TextStyle(
-              fontFamily: "Hind",
-              fontWeight: FontWeight.bold,
+              fontFamily: "Spotify",
+              fontWeight: FontWeight.w700,
               fontSize: 20.0,
             ),
           ),
@@ -194,7 +194,7 @@ class _TimelineState extends State<Timeline>
             // To call shimmer loading setting this to true
           });
         },
-        backgroundColor: Colors.deepPurple[400],
+        backgroundColor: Colors.deepPurple.shade200,
         // Theme.of(context).primaryColor,
         labelStyle: TextStyle(color: Colors.white),
       ),
@@ -565,7 +565,7 @@ class _TimelineState extends State<Timeline>
                               _choiceIndex = 3;
                             });
                           },
-                          backgroundColor: Colors.deepPurple[400],
+                          backgroundColor: Colors.deepPurple.shade200,
                           labelStyle: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -600,8 +600,12 @@ class _TimelineState extends State<Timeline>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SvgPicture.asset('assets/images/no_content.svg',
-                            height: 260.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: SvgPicture.asset(
+                              'assets/images/no_content.svg',
+                              height: 260.0),
+                        ),
                         Divider(
                           indent: 10.0,
                         ),
@@ -609,8 +613,8 @@ class _TimelineState extends State<Timeline>
                           child: Text(
                             "Oops! No Posts here",
                             style: TextStyle(
-                              fontFamily: "Hind",
-                              fontWeight: FontWeight.bold,
+                              fontFamily: "Spotify",
+                              fontWeight: FontWeight.w700,
                               fontSize: 25.0,
                             ),
                           ),
@@ -808,8 +812,7 @@ class _TimelineState extends State<Timeline>
                 },
               ),
               leading: InkWell(
-                child: Icon(Icons.my_location_rounded, 
-                color: Colors.grey[200]),
+                child: Icon(Icons.my_location_rounded, color: Colors.grey[200]),
                 onTap: () {
                   gotoLocationPage();
                 },
@@ -866,7 +869,7 @@ class _TimelineState extends State<Timeline>
             ),
           ),
         ),
-        backgroundColor: Colors.purple[50],
+        backgroundColor: Colors.grey.shade100,
         body: StreamBuilder<QuerySnapshot>(
           stream:
               timelineRef.orderBy('timestamp', descending: true).snapshots(),

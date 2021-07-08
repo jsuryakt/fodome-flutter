@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fodome/pages/about.dart';
 import 'package:fodome/pages/edit_profile.dart';
 import 'package:fodome/pages/feedback.dart';
-import 'package:fodome/widgets/header.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:fodome/pages/languages.dart';
@@ -38,7 +37,17 @@ class _ProfileState extends State<Profile>
           child: SettingsList(
             backgroundColor: Colors.grey.shade100,
             sections: [
+              // SettingsSection(
+              //   title: 'Settings',
+              //   titleTextStyle: TextStyle(
+              //     fontFamily: "Spotify",
+              //     fontSize: 50,
+              //     fontWeight: FontWeight.w700,
+              //   ),
+              //   tiles: [],
+              // ),
               SettingsSection(
+                titlePadding: EdgeInsets.only(top: 10, left: 15),
                 title: 'Account',
                 tiles: [
                   SettingsTile(
@@ -72,8 +81,6 @@ class _ProfileState extends State<Profile>
                     switchValue: value,
                     onToggle: (bool val) {
                       setState(() {
-                        // print(value);
-                        // print(val);
                         value = val;
                       });
                     },
