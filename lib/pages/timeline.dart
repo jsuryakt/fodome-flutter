@@ -190,7 +190,7 @@ class _TimelineState extends State<Timeline>
             _showCustomBar = false;
             this.range = setRange;
             _isLoading = true;
-            _choiceIndex = selected ? index : 1;
+            _choiceIndex = index;
             // To call shimmer loading setting this to true
           });
         },

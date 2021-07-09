@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fodome/pages/about.dart';
+import 'package:fodome/pages/termsandprivacy.dart';
 import 'package:fodome/pages/edit_profile.dart';
 import 'package:fodome/pages/feedback.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -107,8 +108,13 @@ class _ProfileState extends State<Profile>
                 title: 'Misc',
                 tiles: [
                   SettingsTile(
-                      title: 'Terms of Service',
-                      leading: Icon(Icons.description)),
+                    title: 'Terms & Privacy Policy',
+                    leading: Icon(Icons.description),
+                    onTap: () {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (BuildContext context) => TermsPage()));
+                    },
+                  ),
                   SettingsTile(
                     title: 'About',
                     leading: Icon(Icons.perm_device_information),
