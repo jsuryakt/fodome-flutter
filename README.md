@@ -7,8 +7,7 @@ A Flutter mobile app to connect food donors with the needy.
 ## Download App
 <a href="https://drive.google.com/file/d/1RTSOwAUcClxDq4k3ueHRcGw8of0sdaDV/view"><img src="https://playerzon.com/asset/download.png" width="200"></img></a>
 
-<video
-src="https://user-images.githubusercontent.com/63441093/128240407-50ca7941-853b-45e8-b7fd-0ce83808a22e.mp4](https://user-images.githubusercontent.com/63441093/128240407-50ca7941-853b-45e8-b7fd-0ce83808a22e.mp4">
+<video src="https://user-images.githubusercontent.com/63441093/128240407-50ca7941-853b-45e8-b7fd-0ce83808a22e.mp4">
 </video>
 <!-- <video src="https://user-images.githubusercontent.com/63441093/128235188-60c2aaa1-2e08-41b2-9967-944b731b0287.mp4"/> -->
 
